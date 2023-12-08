@@ -38,7 +38,7 @@ export default function HomeScreen({ navigation }) {
             }
         } else {
             // Notify the user about the invalid code
-            Alert.alert('Invalid Code', 'Please enter a valid 6-digit code.');
+            Alert.alert('Invalid Prescription Code', 'Please enter a valid 6-digit code.');
         }
     };
 
@@ -78,7 +78,7 @@ export default function HomeScreen({ navigation }) {
             {isLoading && (
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator size="large" color="#0000ff" />
-                    <Text>Loading...</Text>
+                    <Text>Searcing Nearest Appropriate Pharmacies...</Text>
                 </View>
             )}
         </View>
