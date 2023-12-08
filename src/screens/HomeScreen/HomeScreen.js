@@ -7,7 +7,7 @@ const searchPrescriptionCode = async (code) => {
         setTimeout(() => {
             const data = { "aspirin": 2, "paracetamol": 1 }; // service call here
             resolve(data);
-        }, 4000);
+        }, 1000);
     });
 };
 
@@ -27,6 +27,7 @@ export default function HomeScreen({ navigation }) {
 
                 const result = await searchPrescriptionCode(uppercaseCode);
                 console.log('Search Result:', result);
+                navigation.navigate('Result')
                 // Handle the result as needed
             } catch (error) {
                 console.error('Error searching prescription code:', error);
