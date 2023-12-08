@@ -1,9 +1,26 @@
-import React from 'react';
-import { View, Text, TextInput, Button, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, Button, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native';
 
-export default function HomeScreen({ navigation }) {
+const authenticateUser = (username, password) => {
+    // authentication logic here
+    return true;
+};
+
+export default function LogInScreen({ navigation }) {
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+
     const handleLogin = () => {
-        console.log('Login');
+        const isLoginSuccessful = authenticateUser(username, password);
+
+        if (isLoginSuccessful) {
+            console.log('Username:', username);
+            console.log('Password:', password);
+            navigation.navigate('Home');
+        } else {
+            // Notify the user about unsuccessful login
+            Alert.alert('Login Failed', 'Invalid username or password. Please try again.');
+        }
     };
 
     return (
@@ -16,11 +33,13 @@ export default function HomeScreen({ navigation }) {
             <TextInput
                 style={styles.input}
                 placeholder="Username/Email"
+                onChangeText={(text) => setUsername(text)}
             />
             <TextInput
                 style={styles.input}
                 placeholder="Password"
                 secureTextEntry={true}
+                onChangeText={(text) => setPassword(text)}
             />
             <View style={styles.buttonContainer}>
                 <View
