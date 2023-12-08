@@ -7,7 +7,7 @@ const searchPrescriptionCode = async (code) => {
         setTimeout(() => {
             const data = { "aspirin": 2, "paracetamol": 1 }; // service call here
             resolve(data);
-        }, 1000);
+        }, 4000);
     });
 };
 
@@ -43,45 +43,55 @@ export default function HomeScreen({ navigation }) {
     };
 
     return (
-        <TouchableWithoutFeedback onPress={() => {Keyboard.dismiss();}}>
-        <View style={styles.container}>
-            <Text style={styles.headerText}>Pharm Nav</Text>
-            <Image
-                source={require('../../../assets/pharm-nav-icon.png')}
-                style={styles.logo}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Enter Prescription Code"
-                onChangeText={(text) => setPrescriptionCode(text)}
-                value={prescriptionCode}
-                maxLength={6}
-                autoCapitalize="characters"
-            />
-            <View
-                style={styles.signUpButton}>
-                <Button
-                    title="Find Nearest Pharmacies"
-                    onPress={handleSearch}
-                /></View>
-
-            <TouchableOpacity
-                onPress={() => navigation.navigate('About')}
-                style={styles.aboutButton}
-            ><Text style={styles.aboutText}>About</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-                onPress={() => navigation.navigate('Support')}
-                style={styles.aboutButton}
-            ><Text style={styles.aboutText}>Support</Text>
-            </TouchableOpacity>
-            {isLoading && (
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#0000ff" />
-                    <Text>Searcing Nearest Appropriate Pharmacies...</Text>
-                </View>
-            )}
-        </View>
+        <TouchableWithoutFeedback onPress={() => { Keyboard.dismiss(); }}>
+            <View style={styles.container}>
+                <Text style={styles.headerText}>PharmNav</Text>
+                <Image
+                    source={require('../../../assets/pharm-nav-icon.png')}
+                    style={styles.logo}
+                />
+                {!isLoading && (
+                    <View style={styles.bottomContainer}>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Enter Prescription Code"
+                            onChangeText={(text) => setPrescriptionCode(text)}
+                            value={prescriptionCode}
+                            maxLength={6}
+                            autoCapitalize="characters"
+                        />
+                        <View
+                            style={styles.signUpButton}>
+                            <Button
+                                title="Find Nearest Pharmacies"
+                                onPress={handleSearch}
+                                color={'#6f70ff'}
+                            />
+                        </View>
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate('Profile')}
+                            style={styles.aboutButton}
+                        ><Text style={styles.aboutText}>Profile</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate('About')}
+                            style={styles.aboutButton}
+                        ><Text style={styles.aboutText}>About</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate('Support')}
+                            style={styles.aboutButton}
+                        ><Text style={styles.aboutText}>Support</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+                {isLoading && (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size="large" color="#0000ff" />
+                        <Text>Searcing nearest appropriate pharmacies...</Text>
+                    </View>
+                )}
+            </View>
         </TouchableWithoutFeedback>
     );
 }
@@ -93,48 +103,47 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start',
     },
+    bottomContainer: {
+        flex: 1,
+        alignItems: 'center',
+        width: '100%',
+    },
     headerText: {
-        fontSize: 30,
-        marginVertical: 30,
+        fontSize: 35,
+        marginTop: '10%',
     },
     input: {
         height: 40,
-        width: '80%',
+        width: '60%',
         borderColor: 'gray',
         borderWidth: 1,
-        marginBottom: 10,
+        marginTop: '7%',
         padding: 10,
     },
     logo: {
-        width: '56%',
-        height: '32%',
-        marginBottom: 50,
+        width: 250,
+        height: 250,
+        borderRadius: 150,
+        marginTop: '8%',
     },
     aboutText: {
         color: 'black',
         fontSize: 16,
     },
-    buttonContainer: {
-        flexDirection: 'row',
-        marginBottom: 20,
-    },
-    loginButton: {
-        margin: 10,
-    },
     signUpButton: {
-        margin: 10,
+        margin: '4%',
     },
     aboutButton: {
-        margin: 10,
+        margin: '4%',
     },
     loadingContainer: {
         position: 'absolute',
-        top: 0,
+        top: '20%',
         left: 0,
         right: 0,
         bottom: 0,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 0.8)', // Semi-transparent white background
+        backgroundColor: 'rgba(255, 255, 255, 0.3)', // Semi-transparent white background
     },
 });
