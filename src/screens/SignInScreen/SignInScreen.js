@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native';
+import { useAuth } from '../../AuthContext';
 
 const authenticateUser = (email, password) => {
     // authentication logic here
@@ -7,6 +8,7 @@ const authenticateUser = (email, password) => {
 };
 
 export default function SignInScreen({ navigation }) {
+    const { user, signOut } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -16,6 +18,7 @@ export default function SignInScreen({ navigation }) {
         if (isSigninSuccessful) {
             console.log('Email:', email);
             console.log('Password:', password);
+            console.log('user:', user)
             navigation.navigate('Home');
         } else {
             // Notify the user about unsuccessful login

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, TouchableOpacity, Image, StyleSheet, Alert, ActivityIndicator, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { useAuth } from '../../AuthContext';
 
 const searchPrescriptionCode = async (code) => {
     // Simulating a service call, replace with actual service call
@@ -12,6 +13,7 @@ const searchPrescriptionCode = async (code) => {
 };
 
 export default function HomeScreen({ navigation }) {
+    const { user, signOut } = useAuth();
     const [prescriptionCode, setPrescriptionCode] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
