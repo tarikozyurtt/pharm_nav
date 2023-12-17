@@ -17,35 +17,40 @@ export default function SignUpScreen({ navigation }) {
     return (
         <View style={styles.container}>
             <View style={styles.headerView}>
-            <Text style={styles.headerText}>Create an account</Text>
+                <Text style={styles.headerText}>Create an account</Text>
             </View>
             <TextInput
                 style={styles.input}
                 placeholder="Name"
+                placeholderTextColor="#AFB1B6"
                 value={name}
                 onChangeText={setName}
             />
             <TextInput
                 style={styles.input}
                 placeholder="Surname"
+                placeholderTextColor="#AFB1B6"
                 value={surname}
                 onChangeText={setSurname}
             />
             <TextInput
                 style={styles.input}
                 placeholder="Email"
+                placeholderTextColor="#AFB1B6"
                 value={email}
                 onChangeText={setEmail}
             />
             <TextInput
                 style={styles.input}
                 placeholder="Age"
+                placeholderTextColor="#AFB1B6"
                 value={age}
                 onChangeText={setAge}
             />
             <TextInput
                 style={styles.input}
                 placeholder="Password"
+                placeholderTextColor="#AFB1B6"
                 secureTextEntry
                 value={password1}
                 onChangeText={setPassword1}
@@ -53,6 +58,7 @@ export default function SignUpScreen({ navigation }) {
             <TextInput
                 style={styles.input}
                 placeholder="Confirm Password"
+                placeholderTextColor="#AFB1B6"
                 secureTextEntry
                 value={password2}
                 onChangeText={setPassword2}
@@ -81,14 +87,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start',
     },
-    headerView: {
-        marginTop: '10%',
-        marginRight: '30%',
-        width: '50%',
+    headerView:{
+        width:"80%"
     },
     headerText: {
         fontSize: 30,
         marginTop: '5%',
+        fontWeight:"bold",
+        textAlign:"center"
     },
     input: {
         height: 40,

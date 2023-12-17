@@ -16,7 +16,7 @@ export default function SignInScreen({ navigation }) {
         if (isSigninSuccessful) {
             console.log('Email:', email);
             console.log('Password:', password);
-            navigation.navigate('Home');
+            navigation.replace("Dashboard")
         } else {
             // Notify the user about unsuccessful login
             Alert.alert('Sign In Failed', 'Invalid email or password. Please try again.');
@@ -29,15 +29,19 @@ export default function SignInScreen({ navigation }) {
                 source={require('../../../assets/pharm-nav-icon.png')}
                 style={styles.logo}
             />
-            <Text style={styles.headerText}>Sign in to your account</Text>
+            <View style={styles.headerView}>
+                <Text style={styles.headerText}>Sign in to your account</Text>
+            </View>
             <TextInput
                 style={styles.input}
                 placeholder="Email"
+                placeholderTextColor="#AFB1B6"
                 onChangeText={(text) => setEmail(text)}
             />
             <TextInput
                 style={styles.input}
                 placeholder="Password"
+                placeholderTextColor="#AFB1B6"
                 secureTextEntry={true}
                 onChangeText={(text) => setPassword(text)}
             />
@@ -66,15 +70,20 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start',
     },
+    headerView:{
+        width:"80%"
+    },
     headerText: {
         fontSize: 30,
         marginTop: '5%',
+        fontWeight:"bold",
+        textAlign:"center"
     },
     logo: {
-        width: 250,
-        height: 250,
+        width: 200,
+        height: 200,
         borderRadius: 150,
-        marginTop: '8%',
+        marginTop: '4%',
     },
     input: {
         height: 40,
