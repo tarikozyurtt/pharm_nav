@@ -16,8 +16,13 @@ export default function HomeScreen({ navigation }) {
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSearch = async () => {
+
+        navigation.replace("PharmacyList")
+    
         // Validate if the entered code is exactly 6 characters
         if (prescriptionCode.length === 6) {
+
+            /*
             // Convert to uppercase
             const uppercaseCode = prescriptionCode.toUpperCase();
 
@@ -39,60 +44,47 @@ export default function HomeScreen({ navigation }) {
         } else {
             // Notify the user about the invalid code
             Alert.alert('Invalid Prescription Code', 'Please enter a valid 6-digit code.');
+        */
         }
+        
     };
 
     return (
-        <TouchableWithoutFeedback onPress={() => { Keyboard.dismiss(); }}>
-            <View style={styles.container}>
-                <Text style={styles.headerText}>PharmNav</Text>
-                <Image
-                    source={require('../../../assets/pharm-nav-icon.png')}
-                    style={styles.logo}
-                />
-                {!isLoading && (
-                    <View style={styles.bottomContainer}>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Enter Prescription Code"
-                            onChangeText={(text) => setPrescriptionCode(text)}
-                            value={prescriptionCode}
-                            maxLength={6}
-                            autoCapitalize="characters"
-                        />
-                        <View
-                            style={styles.signUpButton}>
-                            <Button
-                                title="Find Nearest Pharmacies"
-                                onPress={handleSearch}
-                                color={'#6f70ff'}
-                            />
-                        </View>
-                        <TouchableOpacity
-                            onPress={() => navigation.navigate('Profile')}
-                            style={styles.aboutButton}
-                        ><Text style={styles.aboutText}>Profile</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={() => navigation.navigate('About')}
-                            style={styles.aboutButton}
-                        ><Text style={styles.aboutText}>About</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={() => navigation.navigate('Support')}
-                            style={styles.aboutButton}
-                        ><Text style={styles.aboutText}>Support</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
-                {isLoading && (
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size="large" color="#0000ff" />
-                        <Text>Searcing nearest appropriate pharmacies...</Text>
-                    </View>
-                )}
-            </View>
-        </TouchableWithoutFeedback>
+        <View style={styles.container}>
+            <Text style={styles.headerText}>PharmNav</Text>
+            <Image
+                source={require('../../../assets/pharm-nav-icon.png')}
+                style={styles.logo}
+            />
+            {!isLoading && (
+                <View style={styles.bottomContainer}>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Enter Prescription Code"
+                        placeholderTextColor="#AFB1B6"
+                        onChangeText={(text) => setPrescriptionCode(text)}
+                        value={prescriptionCode}
+                        maxLength={6}
+                        autoCapitalize="characters"
+                    />
+                    <TouchableOpacity
+                        style={styles.findButton}
+                        onPress={handleSearch}
+                    >
+                        <Text style={styles.buttonText}>
+                            Find Pharmacies
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+            {isLoading && (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color="#0000ff" />
+                    <Text>Searcing nearest appropriate pharmacies...</Text>
+                </View>
+            )}
+
+        </View>
     );
 }
 
@@ -111,6 +103,7 @@ const styles = StyleSheet.create({
     headerText: {
         fontSize: 35,
         marginTop: '10%',
+        color:"#ac99d2"
     },
     input: {
         height: 40,
@@ -119,6 +112,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         marginTop: '7%',
         padding: 10,
+        borderRadius:10
     },
     logo: {
         width: 250,
@@ -126,15 +120,18 @@ const styles = StyleSheet.create({
         borderRadius: 150,
         marginTop: '8%',
     },
-    aboutText: {
-        color: 'black',
-        fontSize: 16,
+    findButton:{
+        marginTop:20,
+        backgroundColor:"#6f70ff",
+        borderRadius:5,
+        paddingHorizontal:20,
+        paddingVertical:4,
     },
-    signUpButton: {
-        margin: '4%',
-    },
-    aboutButton: {
-        margin: '4%',
+    buttonText:{
+        fontSize:17,
+        color:"#FFFFFF",
+        paddingHorizontal:20,
+        paddingVertical:4,
     },
     loadingContainer: {
         position: 'absolute',
