@@ -1,0 +1,6 @@
+[build]
+  functions = "functions"
+  publish ="dist"
+  environment = {MONGODB_URI = "mongodb+srv://softeng31:12341234@cluster0.wptns1w.mongodb.net/?retryWrites=true&w=majority", JWT_SECRET= "mysecret"}
+
+
