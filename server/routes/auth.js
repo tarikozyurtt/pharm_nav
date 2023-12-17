@@ -20,7 +20,7 @@ router.post("/authenticate", async (req, res) => {
   if (!password) {
     return res.status(400).json({ message: '"password" is required' });
   }
-  //const user = await User.findOne({ email });
+
   const user = await User.findOne({ email: email });
   // If the user doesn't exist or the password is incorrect, return an error
   if (!user) {
