@@ -18,39 +18,24 @@ router.post("/register", async (req, res) => {
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
   );
+  await connectDB();
+
   const newUser = new User({
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
     userRole: req.body.userRole,
-    // Other properties based on your schema
   });
-  const result = async () => {
-    try {
-      const db = await connectDB();
-
-      console.log("new user info");
-
-      await newUser.save();
-      await Pharmacy.create({
-        ownerId: "test",
-        name: "tset",
-      });
-      await Code.create({
-        code: "ABC",
-        drugs: {
-          prozac: 2,
-          aspirin: 3,
-          parol: 4,
-        },
-      });
-
-      return db;
-    } catch (error) {
-      console.log(error);
+  try {
+    await newUser.save();
+  } catch (error) {
+    if (error.code === 11000) {
+      // MongoDB duplicate key error
+      return res.status(400).send("Email already exists");
+    } else {
+      return res.status(500).send(error);
     }
-  };
-  const db = await result();
+  }
 
   //const { name, email, password } = req.body;
 
