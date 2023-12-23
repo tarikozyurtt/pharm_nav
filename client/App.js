@@ -19,16 +19,16 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Welcome">
-        <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }}/>
+        <Stack.Screen name="Welcome" component={WelcomeScreen}/>
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Sign In" component={SignInScreen} />
         <Stack.Screen name="About" component={AboutScreen} />
         <Stack.Screen name="Support" component={SupportScreen} />
         <Stack.Screen name="Sign Up" component={SignUpScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
-        <Stack.Screen name="Dashboard" component={Dashboard} options={{ headerShown: false }} />
-        <Stack.Screen name="PharmacyList" component={PharmacyListScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="PharmacyDetail" component={PharmacyDetailScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Dashboard" component={Dashboard}/>
+        <Stack.Screen name="PharmacyList" component={PharmacyListScreen}/>
+        <Stack.Screen name="PharmacyDetail" component={PharmacyDetailScreen}/>
 
       </Stack.Navigator>
     </NavigationContainer>

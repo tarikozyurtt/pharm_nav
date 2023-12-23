@@ -22,7 +22,6 @@ export default function HomeScreen({ navigation }) {
         // Validate if the entered code is exactly 6 characters
         if (prescriptionCode.length === 6) {
 
-            /*
             // Convert to uppercase
             const uppercaseCode = prescriptionCode.toUpperCase();
 
@@ -44,7 +43,6 @@ export default function HomeScreen({ navigation }) {
         } else {
             // Notify the user about the invalid code
             Alert.alert('Invalid Prescription Code', 'Please enter a valid 6-digit code.');
-        */
         }
         
     };
