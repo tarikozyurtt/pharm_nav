@@ -1,65 +1,133 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TextInput, Button, TouchableOpacity, ActivityIndicator, TouchableWithoutFeedback, Keyboard, Image, StyleSheet, Alert } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 
-const authenticateUser = (email, password) => {
-    // authentication logic here
-    return true;
+const authenticateUser = async (body) => {
+    return await fetch('https://splendorous-praline-960c1f.netlify.app/.netlify/functions/index/authenticate', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: body,
+    });
+};
+
+const simulateFunctionCall = () => {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve("Function call completed");
+        }, 2000); // 2000 milliseconds = 2 seconds
+    });
 };
 
 export default function SignInScreen({ navigation }) {
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const password = useRef('');
+    const route = useRoute();
+    const signUp = route.params?.signUpSuccess;
+    const [mandatoryFull, setMandatoryFull] = useState(true);
+    const [mandatoryFields, setMandatoryFields] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSignin = () => {
-        const isSigninSuccessful = authenticateUser(email, password);
+    const handleSignin = async () => {
+        const emptyFields = []
+        if (!email) {
+            emptyFields.push('email')
+        }
+        if (!password.current) {
+            emptyFields.push('password')
+        }
+        setMandatoryFields(emptyFields);
+        if (emptyFields.length > 0) {
+            setMandatoryFull(false)
+            return;
+        }
+        else {
+            setMandatoryFull(true)
+        }
+        try {
+            Keyboard.dismiss();
+            setIsLoading(true);
+            // const response = await authenticateUser(
+            //     JSON.stringify({
+            //         email: email,
+            //         password: password.current,
+            //     }))
+            const response = simulateFunctionCall()
 
-        if (isSigninSuccessful) {
-            console.log('Email:', email);
-            console.log('Password:', password);
+            // if (!response.ok) {
+            //     throw new Error('Sign in failed');
+            // }
+            // // Registration successful, handle the response if needed
+            // const result = await response.json();
+            // console.log('Login successful:', result);
             navigation.replace("Dashboard")
-        } else {
-            // Notify the user about unsuccessful login
+        } catch (error) {
             Alert.alert('Sign In Failed', 'Invalid email or password. Please try again.');
+        } finally {
+            setIsLoading(false);
+            password.current = ''
         }
     };
 
-    return (
-        <View style={styles.container}>
-            <Image
-                source={require('../../../assets/pharm-nav-icon.png')}
-                style={styles.logo}
-            />
-            <View style={styles.headerView}>
-                <Text style={styles.headerText}>Sign in to your account</Text>
-            </View>
-            <TextInput
-                style={styles.input}
-                placeholder="Email"
-                placeholderTextColor="#AFB1B6"
-                onChangeText={(text) => setEmail(text)}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Password"
-                placeholderTextColor="#AFB1B6"
-                secureTextEntry={true}
-                onChangeText={(text) => setPassword(text)}
-            />
-            <TouchableOpacity
-                style={styles.button}
-                onPress={handleSignin}
-            >
-                <Text style={styles.buttonText}>Sign in</Text>
-            </TouchableOpacity>
+    useEffect(() => {
+        if (signUp === 1) {
+            Alert.alert('Sign Up Successful', 'Your sign up was successful!');
+        }
+    }, [signUp]);
 
-            <View style={styles.signUpContainer}>
-                <Text style={styles.dontHaveAccountText}>
-                    Don't have an account yet?{' '}</Text>
-                <TouchableOpacity onPress={() => navigation.navigate('Sign Up')}>
-                    <Text style={styles.signUpText}>Sign Up</Text>
-                </TouchableOpacity>
+    return (
+        <TouchableWithoutFeedback onPress={() => { Keyboard.dismiss(); }}>
+            <View style={styles.container}>
+                <Image
+                    source={require('../../../assets/pharm-nav-icon.png')}
+                    style={styles.logo}
+                />
+                <View style={styles.headerView}>
+                    <Text style={styles.headerText}>Sign in to your account</Text>
+                </View>
+                {!isLoading && (<TextInput
+                    style={[styles.input, mandatoryFields.includes('email') && styles.mandatory]}
+                    placeholder="Email*"
+                    placeholderTextColor="#AFB1B6"
+                    value={email}
+                    onChangeText={setEmail}
+                />)}
+                {!isLoading && (<TextInput
+                    style={[styles.input, mandatoryFields.includes('password') && styles.mandatory]}
+                    placeholder="Password*"
+                    placeholderTextColor="#AFB1B6"
+                    secureTextEntry
+                    value={password}
+                    onChangeText={(text) => (password.current = text)}
+                />)}
+                {!mandatoryFull && (
+                    <Text style={{ color: 'red' }}>You did not fill all mandatory fields!</Text>
+                )}
+                {!isLoading && (
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={handleSignin}
+                    >
+                        <Text style={styles.buttonText}>Sign in</Text>
+                    </TouchableOpacity>)}
+
+                {!isLoading && (
+                    <View style={styles.signUpContainer}>
+                        <Text style={styles.dontHaveAccountText}>
+                            Don't have an account yet?{' '}</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate('Sign Up')}>
+                            <Text style={styles.signUpText}>Sign Up</Text>
+                        </TouchableOpacity>
+                    </View>)}
+                {isLoading && (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size="large" color="#0000ff" />
+                        <Text>We are logging you in...</Text>
+                    </View>
+                )}
             </View>
-        </View>
+        </TouchableWithoutFeedback>
     );
 }
 
@@ -70,14 +138,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start',
     },
-    headerView:{
-        width:"80%"
+    headerView: {
+        width: "80%"
     },
     headerText: {
         fontSize: 30,
         marginTop: '5%',
-        fontWeight:"bold",
-        textAlign:"center"
+        fontWeight: "bold",
+        textAlign: "center"
     },
     logo: {
         width: 200,
@@ -123,5 +191,18 @@ const styles = StyleSheet.create({
     },
     signUpContainer: {
         flexDirection: 'row',
-    }
+    },
+    mandatory: {
+        borderColor: 'red', // Change border color to red for mandatory fields
+    },
+    loadingContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'rgba(255, 255, 255, 0.3)', // Semi-transparent white background
+    },
 });
