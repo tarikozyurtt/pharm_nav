@@ -14,6 +14,7 @@ import ProfileScreen from './src/screens/ProfileScreen/ProfileScreen';
 import Dashboard from './src/screens/Dashboard';
 import PharmacyListScreen from './src/screens/PharmacyListScreen/PharmacyList';
 import PharmacyDetailScreen from './src/screens/PharmacyDetailScreen/PharmacyDetail';
+import MapScreen from './src/screens/MapScreen/MapScreen';
 
 const Stack = createStackNavigator();
 
@@ -32,7 +33,7 @@ export default function App() {
           <Stack.Screen name="Dashboard" component={Dashboard} />
           <Stack.Screen name="PharmacyList" component={PharmacyListScreen} />
           <Stack.Screen name="PharmacyDetail" component={PharmacyDetailScreen} />
-
+          <Stack.Screen name="Map" component={MapScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </AuthProvider>
