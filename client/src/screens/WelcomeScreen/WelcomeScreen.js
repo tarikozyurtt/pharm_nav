@@ -1,7 +1,9 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { useAuth } from '../../AuthContext';
 
 export default function WelcomeScreen({ navigation }) {
+    const { user, signOut } = useAuth();
 
     return (
         <View style={styles.container}>
@@ -13,7 +15,7 @@ export default function WelcomeScreen({ navigation }) {
                 style={styles.logo}
             />
             <TouchableOpacity
-                onPress={() => navigation.navigate('Sign In')}
+                onPress={() => user ? navigation.navigate('Dashboard') : navigation.navigate('Sign In')}
                 style={styles.letsGoButton}
             ><Text style={styles.letsGoText}>Let's Go {'>'}</Text>
             </TouchableOpacity>

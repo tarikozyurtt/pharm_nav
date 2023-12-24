@@ -22,7 +22,7 @@ const simulateFunctionCall = () => {
 };
 
 export default function SignInScreen({ navigation }) {
-    const { user, signOut } = useAuth();
+    const { user, signIn } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const route = useRoute(0);
@@ -50,19 +50,25 @@ export default function SignInScreen({ navigation }) {
         try {
             Keyboard.dismiss();
             setIsLoading(true);
-            // const response = await authenticateUser(
-            //     JSON.stringify({
-            //         email: email,
-            //         password: password,
-            //     }))
-            const response = simulateFunctionCall()
-            console.log('user:', user)
-            // if (!response.ok) {
-            //     throw new Error('Sign in failed');
-            // }
-            // // Registration successful, handle the response if needed
-            // const result = await response.json();
-            // console.log('Login successful:', result);
+
+
+            // const response = await simulateFunctionCall()
+            // const result = {"userInfo": {"userEmail": "bug@gmail.com", "userName": "tarik oz"}, "userToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjY1ODZjM2VjNTA5NWFkODc1MWQyYjJlZCIsIm5hbWUiOiJ0YXJpayBveiIsImVtYWlsIjoidGFyaWtAZ21haWwuY29tIiwicGFzc3dvcmQiOiIkMmIkMTAkbk5taFprU2xRdHNZa3A1L3B1em0zdXZUbG84OGRpTW1ZY0t3RHhvaWY1U3VTT2pRNlc5Si4iLCJtZXNzYWdlcyI6W10sIl9fdiI6MH0sImlhdCI6MTcwMzQzOTY3MX0.E_f1B-E_JU7__Hs6EG1N9zZrGcgx0s8KJ9v4-YVdoR4"}
+            // console.log('Login successful:', result.userToken, result.userToken);
+
+            const response = await authenticateUser(
+                JSON.stringify({
+                    email: email,
+                    password: password,
+                }))
+            
+            if (!response.ok) {
+                throw new Error('Sign in failed');
+            }
+            const result = await response.json();
+
+            
+            signIn(result.userToken, result.userInfo);
             navigation.replace("Dashboard")
         } catch (error) {
             Alert.alert('Sign In Failed', 'Invalid email or password. Please try again.');

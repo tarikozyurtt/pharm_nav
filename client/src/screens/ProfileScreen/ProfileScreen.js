@@ -1,11 +1,14 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useAuth } from '../../AuthContext';
 
 export default function ProfileScreen({ navigation }) {
+  const { user, signOut } = useAuth();
 
   const handleLogOut = async () => {
     // Logic for signing out (e.g., clearing authentication tokens, resetting user state, etc.)
     console.log('user signed out')
+    signOut();
     navigation.reset({
       index: 0,
       routes: [{ name: 'Welcome' }],
