@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, TouchableWithoutFeedback, StyleSheet, Keyboard } from 'react-native';
 // import { useAuth } from './AuthContext';
 
@@ -25,8 +25,8 @@ export default function SignUpScreen({ navigation }) {
     const [surname, setSurname] = useState('');
     const [email, setEmail] = useState('');
     const [age, setAge] = useState('');
-    const password1 = useRef('');
-    const password2 = useRef('');
+    const [password1, setPassword1] = useState('');
+    const [password2, setPassword2] = useState('');
     const [passwordsMatch, setPasswordsMatch] = useState(true);
     const [mandatoryFull, setMandatoryFull] = useState(true);
     const [mandatoryFields, setMandatoryFields] = useState([]);
@@ -43,10 +43,10 @@ export default function SignUpScreen({ navigation }) {
         if (!email) {
             emptyFields.push('email')
         }
-        if (!password1.current) {
+        if (!password1) {
             emptyFields.push('password1')
         }
-        if (!password2.current) {
+        if (!password2) {
             emptyFields.push('password2')
         }
         setMandatoryFields(emptyFields);
@@ -60,7 +60,7 @@ export default function SignUpScreen({ navigation }) {
         }
 
         setPasswordsMatch(true);
-        if (password1.current !== password2.current) {
+        if (password1 !== password2) {
             setPasswordsMatch(false);
             return;
         }
@@ -72,7 +72,7 @@ export default function SignUpScreen({ navigation }) {
                 JSON.stringify({
                     name: name,
                     email: email,
-                    password: password1.current,
+                    password: password1,
                 }))
 
             // if (!response.ok) {
@@ -131,7 +131,7 @@ export default function SignUpScreen({ navigation }) {
                     placeholderTextColor="#AFB1B6"
                     secureTextEntry
                     value={password1}
-                    onChangeText={(text) => (password1.current = text)}
+                    onChangeText={setPassword1}
                 />)}
                 {!isLoading && (<TextInput
                     style={[styles.input, mandatoryFields.includes('password2') && styles.mandatory]}
@@ -139,7 +139,7 @@ export default function SignUpScreen({ navigation }) {
                     placeholderTextColor="#AFB1B6"
                     secureTextEntry
                     value={password2}
-                    onChangeText={(text) => (password2.current = text)}
+                    onChangeText={setPassword2}
                 />)}
 
                 {!mandatoryFull && (

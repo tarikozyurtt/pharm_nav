@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, TouchableOpacity, ActivityIndicator, TouchableWithoutFeedback, Keyboard, Image, StyleSheet, Alert } from 'react-native';
 import { useRoute } from '@react-navigation/native';
+import { useAuth } from '../../AuthContext';
 
 const authenticateUser = async (body) => {
     return await fetch('https://splendorous-praline-960c1f.netlify.app/.netlify/functions/index/authenticate', {
@@ -21,9 +22,10 @@ const simulateFunctionCall = () => {
 };
 
 export default function SignInScreen({ navigation }) {
+    const { user, signOut } = useAuth();
     const [email, setEmail] = useState('');
-    const password = useRef('');
-    const route = useRoute();
+    const [password, setPassword] = useState('');
+    const route = useRoute(0);
     const signUp = route.params?.signUpSuccess;
     const [mandatoryFull, setMandatoryFull] = useState(true);
     const [mandatoryFields, setMandatoryFields] = useState([]);
@@ -34,7 +36,7 @@ export default function SignInScreen({ navigation }) {
         if (!email) {
             emptyFields.push('email')
         }
-        if (!password.current) {
+        if (!password) {
             emptyFields.push('password')
         }
         setMandatoryFields(emptyFields);
@@ -51,10 +53,10 @@ export default function SignInScreen({ navigation }) {
             // const response = await authenticateUser(
             //     JSON.stringify({
             //         email: email,
-            //         password: password.current,
+            //         password: password,
             //     }))
             const response = simulateFunctionCall()
-
+            console.log('user:', user)
             // if (!response.ok) {
             //     throw new Error('Sign in failed');
             // }
@@ -66,7 +68,7 @@ export default function SignInScreen({ navigation }) {
             Alert.alert('Sign In Failed', 'Invalid email or password. Please try again.');
         } finally {
             setIsLoading(false);
-            password.current = ''
+            setPassword('')
         }
     };
 
@@ -99,7 +101,7 @@ export default function SignInScreen({ navigation }) {
                     placeholderTextColor="#AFB1B6"
                     secureTextEntry
                     value={password}
-                    onChangeText={(text) => (password.current = text)}
+                    onChangeText={setPassword}
                 />)}
                 {!mandatoryFull && (
                     <Text style={{ color: 'red' }}>You did not fill all mandatory fields!</Text>
