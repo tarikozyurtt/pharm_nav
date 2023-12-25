@@ -21,12 +21,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-
   surname: {
     type: String,
   },
   bornDate: {
     type: Number,
+  },
+  pharmacyName: {
+    type: String,
   },
   comments: {
     type: Object,
