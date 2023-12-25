@@ -2,6 +2,13 @@ const mongoose = require("mongoose");
 /* PetSchema will correspond to a collection in your MongoDB database. */
 const pharmacySchema = new mongoose.Schema(
   {
+    location: {
+      type: Object,
+      default: {
+        type: "Point",
+        coordinates: [0, 0],
+      },
+    },
     ownerId: {
       type: String,
       required: true,

@@ -15,8 +15,7 @@ router.post("/pharmacy", async (req, res) => {
   );
 
   await connectDB();
-
-  const { code } = req.body;
+  const { code, location } = req.body;
   let codeData = await codeSchema.findOne({ code: code });
   if (!codeData) {
     return res.status(401).json({ message: "Code is incorrect" });
@@ -28,6 +27,16 @@ router.post("/pharmacy", async (req, res) => {
   }, {});
   let pipeline = [
     {
+      $geoNear: {
+        near: {
+          type: "Point",
+          coordinates: [location.longitude, location.latitude],
+        },
+        distanceField: "distance",
+        spherical: true,
+      },
+    },
+    {
       $match: matchConditions,
     },
     {
@@ -35,9 +44,11 @@ router.post("/pharmacy", async (req, res) => {
         ownerId: 1,
         name: 1,
         drugs: 1, // Include the entire drugs object in the output
+        location: 1,
       },
     },
   ];
+  console.log(location);
 
   let pharmacyData = await pharmacySchema.aggregate(pipeline);
   // Return the token as JSON
