@@ -6,16 +6,12 @@ const serverless = require("serverless-http");
 const userRouter = require("../routes/users");
 const authRouter = require("../routes/auth");
 const pharmacyRouter = require("../routes/pharmacy");
-const helloRouter = require("../routes/hello");
 const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 app.use(express.json());
 app.use(cors());
 
-
-
-app.use("/.netlify/functions/index", helloRouter);
 app.use("/.netlify/functions/index", userRouter);
 app.use("/.netlify/functions/index", authRouter);
 app.use("/.netlify/functions/index", pharmacyRouter);

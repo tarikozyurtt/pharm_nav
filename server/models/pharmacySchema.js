@@ -10,6 +10,9 @@ const pharmacySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    pharmImage: {
+      type: String,
+    },
     drugs: {
       type: Object,
       default: {
@@ -52,6 +55,10 @@ const pharmacySchema = new mongoose.Schema(
         totalRatings: 0,
         totalUsers: 0,
       },
+    },
+    comments: {
+      type: Array,
+      default: [],
     },
   },
   {
