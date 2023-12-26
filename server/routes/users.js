@@ -19,7 +19,6 @@ router.post("/register", async (req, res) => {
     "Origin, X-Requested-With, Content-Type, Accept"
   );
   await connectDB();
-
   const newUser = new User({
     name: req.body.name,
     email: req.body.email,

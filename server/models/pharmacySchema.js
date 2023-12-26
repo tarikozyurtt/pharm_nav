@@ -17,6 +17,7 @@ const pharmacySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+
     pharmImage: {
       type: String,
     },
