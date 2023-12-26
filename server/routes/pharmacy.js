@@ -58,3 +58,23 @@ router.post("/pharmacy", async (req, res) => {
 });
 
 module.exports = router;
+
+router.post("/comments", async (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+
+  await connectDB();
+
+  const { pharmId } = req.body;
+  let pharmacyData = await pharmacySchema.findOne({ _id: pharmId });
+  if (!pharmacyData) {
+    return res.status(401).json({ message: "Pharmacy not found" });
+  }
+
+  res.status(200).json({
+    pharmacyData: pharmacyData?.comments ?? [],
+  });
+});
