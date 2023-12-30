@@ -39,7 +39,7 @@ router.post("/authenticate", async (req, res) => {
   // Return the token as JSON
   res.status(200).json({
     userToken: token,
-    userInfo: { userName: user.name, userEmail: user.email },
+    userInfo: { userName: user.name, userEmail: user.email, userId: user._id },
   });
 });
 
