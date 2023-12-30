@@ -61,18 +61,24 @@ router.post("/pharmacy", async (req, res) => {
         location: 1,
         distance: 1,
         rating: 1,
-        _id: 1
+        _id: 1,
+        isPremium: 1,
       },
     },
   ];
 
   let pharmacyData = await pharmacySchema.aggregate(pipeline);
+  pipeline[1].$match.isPremium = true;
+  let premiumPharmacies = await pharmacySchema.aggregate(pipeline);
+
   // Return the token as JSON
   res.status(200).json({
-    pharmacyData: pharmacyData,
+    pharmacyData: {
+      premiumPharmacies: premiumPharmacies ?? [],
+      pharmacies: pharmacyData ?? [],
+    },
   });
 });
-
 
 router.post("/pharmacyinfo", async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
@@ -215,19 +221,9 @@ router.get("/getPharmDetail", async (req, res) => {
   let pharmacy = await pharmacySchema.findOne({ ownerId: userId });
   if (!pharmacy) {
     return res.status(401).json({ message: "Pharmacy not found" });
+  } else {
+    return res.status(200).json(pharmacy);
   }
-  else {
-
-    return res.status(200).json(pharmacy)
-  }
-
-
-
 });
-
-
-
-
-
 
 module.exports = router;
