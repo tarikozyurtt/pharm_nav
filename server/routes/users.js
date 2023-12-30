@@ -78,7 +78,8 @@ router.post("/registerPharmacist", async (req, res) => {
     email: req.body.email,
     password: req.body.password,
     userRole: req.body.userRole,
-    pharmacyName: req.body.pharmacyName
+    pharmacyName: req.body.pharmacyName,
+
   });
   try {
     await newUser.save();
@@ -95,7 +96,10 @@ router.post("/registerPharmacist", async (req, res) => {
 
     name: req.body.pharmacyName,
     location: req.body.location,
-    ownerId: newUser._id
+    ownerId: newUser._id,
+    description: req.body.description
+
+
 
 
 
