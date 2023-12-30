@@ -47,6 +47,25 @@ router.post("/register", async (req, res) => {
   res.status(200).json({ userName: newUser.name, userEmail: newUser.email });
 });
 
+router.post("/history", async (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  await connectDB();
+  const { userId } = req.body;
+  const userInfo = await User.findById(userId);
+
+  if (!userInfo) {
+    return res.status(400).send("User not found");
+  }
+
+  res
+    .status(200)
+    .json({ pastPrescriptions: userInfo?.pastPrescriptions ?? [] });
+});
+
 router.get("/user", auth, async (req, res) => {
   try {
     const userId = req.user.id;

@@ -20,17 +20,21 @@ router.post("/pharmacy", async (req, res) => {
   if (!codeData) {
     return res.status(401).json({ message: "Code is incorrect" });
   }
+
+  const { drugs } = codeData;
   await userSchema.findOneAndUpdate(
     {
       _id: codeData.patientId,
     },
     {
       $push: {
-        pastPrescriptions: code,
+        pastPrescriptions: {
+          code: code,
+          drugs: drugs,
+        },
       },
     }
   );
-  const { drugs } = codeData;
   const matchConditions = Object.keys(drugs).reduce((acc, drug) => {
     acc[`drugs.${drug}`] = { $gt: drugs[drug] };
     return acc;
