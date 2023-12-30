@@ -6,7 +6,7 @@ const Pharmacy = require("../models/pharmacySchema");
 const Code = require("../models/codeSchema");
 const auth = require("../middleware/auth");
 const connectDB = require("../helpers/dbMongoose");
-
+const ticketSchema = require("../models/supportSchema");
 const { mongoose } = require("mongoose");
 
 const { MongoClient, ServerApiVersion } = require("mongodb");
@@ -123,7 +123,38 @@ router.post("/registerPharmacist", async (req, res) => {
   res.status(200).json({ userName: newUser.name, userEmail: newUser.email, pharmacyName: newUser.pharmacyName, location: newPharmacy.location });
 });
 
-
+router.post("/sendticket", async (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  await connectDB();
+  const { email, pharmacyName, pharmacistName, description } = req.body;
+  const newTicket = new ticketSchema({
+    email: email,
+    pharmacyName: pharmacyName,
+    pharmacistName: pharmacistName,
+    description: description,
+  });
+  try {
+    await newTicket.save();
+  } catch (error) {
+    console.log(error);
+    if (error.code === 11000) {
+      // MongoDB duplicate key error
+      return res.status(400).send("Ticket already exists");
+    } else {
+      return res.status(500).send(error);
+    }
+  }
+  res.status(200).json({
+    email: newTicket.email,
+    pharmacyName: newTicket.pharmacyName,
+    pharmacistName: newTicket.pharmacistName,
+    description: newTicket.description,
+  });
+});
 
 
 
