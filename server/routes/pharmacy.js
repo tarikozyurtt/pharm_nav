@@ -83,7 +83,7 @@ router.post("/pharmacyinfo", async (req, res) => {
   await connectDB();
 
   const { pharmId } = req.body;
-  let pharmacyData = await pharmacySchema.findOne({ _id: pharmId });
+  let pharmacyData = await pharmacySchema.findById(pharmId);
   if (!pharmacyData) {
     return res.status(401).json({ message: "Pharmacy not found" });
   }
