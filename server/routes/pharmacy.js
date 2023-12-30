@@ -118,6 +118,56 @@ router.post("/addcomment", async (req, res) => {
     pharmacyData: pharmacyData?.comments ?? [],
   });
 });
+router.post("/update", async (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+
+  await connectDB();
+
+  const { drugs, pharmId } = req.body;
+
+  let pharmacyData = await pharmacySchema.findById(pharmId);
+  if (!pharmacyData) {
+    return res.status(401).json({ message: "Pharmacy not found" });
+  }
+
+  let bulkOperations = [];
+  for (let [drugName, quantityChange] of Object.entries(drugs)) {
+    if (!pharmacyData.drugs[drugName]) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Drug in request not found" });
+    }
+    if (pharmacyData.drugs[drugName] + quantityChange < 0) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Stock can not be negative" });
+    }
+    let drugField = `drugs.${drugName}`;
+    bulkOperations.push({
+      updateOne: {
+        filter: { _id: pharmId },
+        update: {
+          $inc: {
+            [drugField]: quantityChange,
+          },
+        },
+      },
+    });
+  }
+
+  await pharmacySchema.bulkWrite(bulkOperations);
+
+  let newData = await pharmacySchema.findById(pharmId);
+
+  res.status(200).json({
+    success: true,
+    pharmacyData: newData ?? [],
+  });
+});
 
 router.post("/addrating", async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
