@@ -21,8 +21,9 @@ const pharmacySchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    pharmImage: {
-      type: String,
+    pharmImages: {
+      type: Array,
+      default: [],
     },
     drugs: {
       type: Object,
