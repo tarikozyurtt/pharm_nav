@@ -12,7 +12,7 @@ const { mongoose } = require("mongoose");
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
 // Create a new user
-router.post("/register", async (req, res) => {
+router.post("/registerPatient", async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
@@ -65,6 +65,64 @@ router.post("/history", async (req, res) => {
     .status(200)
     .json({ pastPrescriptions: userInfo?.pastPrescriptions ?? [] });
 });
+//
+router.post("/registerPharmacist", async (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  await connectDB();
+  const newUser = new User({
+    name: req.body.name,
+    email: req.body.email,
+    password: req.body.password,
+    userRole: req.body.userRole,
+    pharmacyName: req.body.pharmacyName
+  });
+  try {
+    await newUser.save();
+  } catch (error) {
+    if (error.code === 11000) {
+      // MongoDB duplicate key error
+      return res.status(400).send("Email already exists");
+    } else {
+      return res.status(500).send(error);
+    }
+  }
+
+  const newPharmacy = new Pharmacy({
+
+    name: req.body.pharmacyName,
+    location: req.body.location,
+    ownerId: newUser._id
+
+
+
+  });
+  try {
+    console.log(newUser._id)
+    console.log(req.body.location)
+    await newPharmacy.save();
+  } catch (error) {
+    // MongoDB duplicate key error
+
+    return res.status(500).send(error);
+
+  }
+
+  // Return the new user as JSON
+  res.status(200).json({ userName: newUser.name, userEmail: newUser.email, pharmacyName: newUser.pharmacyName, location: newPharmacy.location });
+});
+
+
+
+
+
+
+
+
+
 
 router.get("/user", auth, async (req, res) => {
   try {
@@ -80,4 +138,5 @@ router.get("/user", auth, async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
+
 module.exports = router;
