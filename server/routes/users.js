@@ -93,7 +93,7 @@ router.post("/registerPharmacist", async (req, res) => {
 
   const newPharmacy = new Pharmacy({
 
-    name: req.get('host'),
+    name: req.body.pharmacyName,
     location: req.body.location,
     ownerId: newUser._id
 
