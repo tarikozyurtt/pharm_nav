@@ -97,7 +97,10 @@ router.post("/registerPharmacist", async (req, res) => {
     name: req.body.pharmacyName,
     location: req.body.location,
     ownerId: newUser._id,
-    description: req.body.description
+    description: req.body.description,
+    address: req.body.address,
+    phoneNum: req.body.phoneNum
+
 
 
 
