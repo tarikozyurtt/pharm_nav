@@ -1,17 +1,19 @@
 // users.test.js
 
-const request = require('supertest'); 
+const request = require('supertest');
 const express = require('express');
 const bodyParser = require('body-parser');
-const registerPatientRoute = require('./path-to-registerPatient-route'); // Adjust the path accordingly
-const connectDB = require('./path-to-connectDB-function'); // Adjust the path accordingly
-const User = require('./path-to-User-model'); // Adjust the path accordingly
+
+// Adjust these paths based on your project structure
+const registerPatientRoute = require('../routes/users'); // Assuming the route is in 'routes' folder and named 'users.js'
+const connectDB = require('../helpers/dbMongoose'); // Assuming the 'dbMongoose.js' file is in the 'helpers' folder
+const User = require('../models/users'); // Assuming the 'users.js' file is in the 'models' folder
 
 const app = express();
 app.use(bodyParser.json());
-app.use('/api', registerPatientRoute); // Assume your route is under '/api/registerPatient'
+app.use('/api', registerPatientRoute);
 
-jest.mock('./path-to-connectDB-function'); // Mock the connectDB function
+jest.mock('../helpers/dbMongoose'); // Mock the connectDB function
 
 describe('POST /api/registerPatient', () => {
   it('should create a new user', async () => {
