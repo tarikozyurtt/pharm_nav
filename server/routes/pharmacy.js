@@ -1,6 +1,6 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
-const User = require("../models/users");
+const userSchema = require("../models/users");
 const bcrypt = require("bcrypt");
 const connectDB = require("../helpers/dbMongoose");
 const codeSchema = require("../models/codeSchema");
@@ -20,17 +20,21 @@ router.post("/pharmacy", async (req, res) => {
   if (!codeData) {
     return res.status(401).json({ message: "Code is incorrect" });
   }
+
+  const { drugs } = codeData;
   await userSchema.findOneAndUpdate(
     {
       _id: codeData.patientId,
     },
     {
       $push: {
-        pastPrescriptions: code,
+        pastPrescriptions: {
+          code: code,
+          drugs: drugs,
+        },
       },
     }
   );
-  const { drugs } = codeData;
   const matchConditions = Object.keys(drugs).reduce((acc, drug) => {
     acc[`drugs.${drug}`] = { $gt: drugs[drug] };
     return acc;
@@ -51,10 +55,12 @@ router.post("/pharmacy", async (req, res) => {
     },
     {
       $project: {
+        pharmImage: 1,
         ownerId: 1,
         name: 1,
         drugs: 1, // Include the entire drugs object in the output
         location: 1,
+        isPremium: 1,
       },
     },
   ];
@@ -77,7 +83,7 @@ router.post("/pharmacyinfo", async (req, res) => {
   await connectDB();
 
   const { pharmId } = req.body;
-  let pharmacyData = await pharmacySchema.findOne({ _id: pharmId });
+  let pharmacyData = await pharmacySchema.findById(pharmId);
   if (!pharmacyData) {
     return res.status(401).json({ message: "Pharmacy not found" });
   }

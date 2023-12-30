@@ -17,7 +17,10 @@ const pharmacySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-
+    isPremium: {
+      type: Boolean,
+      default: false,
+    },
     pharmImage: {
       type: String,
     },

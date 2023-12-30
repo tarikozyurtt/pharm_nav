@@ -47,59 +47,24 @@ router.post("/registerPatient", async (req, res) => {
   res.status(200).json({ userName: newUser.name, userEmail: newUser.email });
 });
 
-router.post("/registerPharmacist", async (req, res) => {
+router.post("/history", async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
   );
   await connectDB();
-  const newUser = new User({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    userRole: req.body.userRole,
-    pharmacyName: req.body.pharmacyName
-  });
-  try {
-    await newUser.save();
-  } catch (error) {
-    if (error.code === 11000) {
-      // MongoDB duplicate key error
-      return res.status(400).send("Email already exists");
-    } else {
-      return res.status(500).send(error);
-    }
+  const { userId } = req.body;
+  const userInfo = await User.findById(userId);
+
+  if (!userInfo) {
+    return res.status(400).send("User not found");
   }
 
-  const newPharmacy = new Pharmacy({
-
-    name: req.body.pharmacyName,
-    location: req.body.location,
-    ownerId: newUser._id
-
-
-
-  });
-  try {
-    console.log(newUser._id)
-    console.log(req.body.location)
-    await newPharmacy.save();
-  } catch (error) {
-    // MongoDB duplicate key error
-
-    return res.status(500).send(error);
-
-  }
-
-  // Return the new user as JSON
-  res.status(200).json({ userName: newUser.name, userEmail: newUser.email, pharmacyName: newUser.pharmacyName, location: newPharmacy.location });
+  res
+    .status(200)
+    .json({ pastPrescriptions: userInfo?.pastPrescriptions ?? [] });
 });
-
-
-
-
-
 
 router.get("/user", auth, async (req, res) => {
   try {
