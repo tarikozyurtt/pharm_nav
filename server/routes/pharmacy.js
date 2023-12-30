@@ -204,4 +204,30 @@ router.post("/addrating", async (req, res) => {
   });
 });
 
+router.get("/getPharmDetail", async (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  const { userId } = req.params;
+  await connectDB();
+  let pharmacy = await pharmacySchema.findOne({ ownerId: userId });
+  if (!pharmacy) {
+    return res.status(401).json({ message: "Pharmacy not found" });
+  }
+  else {
+
+    return res.status(200).json(pharmacy)
+  }
+
+
+
+});
+
+
+
+
+
+
 module.exports = router;
