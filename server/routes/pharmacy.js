@@ -1,6 +1,6 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
-const User = require("../models/users");
+const userSchema = require("../models/users");
 const bcrypt = require("bcrypt");
 const connectDB = require("../helpers/dbMongoose");
 const codeSchema = require("../models/codeSchema");
@@ -51,6 +51,7 @@ router.post("/pharmacy", async (req, res) => {
     },
     {
       $project: {
+        pharmImage: 1,
         ownerId: 1,
         name: 1,
         drugs: 1, // Include the entire drugs object in the output
