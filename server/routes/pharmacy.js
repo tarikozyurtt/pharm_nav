@@ -60,6 +60,7 @@ router.post("/pharmacy", async (req, res) => {
         name: 1,
         drugs: 1, // Include the entire drugs object in the output
         location: 1,
+        isPremium: 1,
       },
     },
   ];
