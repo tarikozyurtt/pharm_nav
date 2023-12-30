@@ -210,7 +210,7 @@ router.get("/getPharmDetail", async (req, res) => {
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
   );
-  const { userId } = req.params;
+  const userId = req.query.userId;
   await connectDB();
   let pharmacy = await pharmacySchema.findOne({ ownerId: userId });
   if (!pharmacy) {
