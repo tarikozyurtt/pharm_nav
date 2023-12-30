@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, TouchableWi
 // import { useAuth } from './AuthContext';
 
 const callRegister = async (body) => {
-    return await fetch('https://splendorous-praline-960c1f.netlify.app/.netlify/functions/index/register', {
+    return await fetch('https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/registerPatient', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -68,21 +68,28 @@ export default function SignUpScreen({ navigation }) {
         try {
             Keyboard.dismiss();
             setIsLoading(true);
-            const response = await simulateFunctionCall(
+            console.log("asda", JSON.stringify({
+                userRole: 1,
+                name: name,
+                email: email,
+                password: password1,
+            }))
+            callRegister(
                 JSON.stringify({
+                    userRole: 1,
                     name: name,
                     email: email,
                     password: password1,
-                }))
-
-            // if (!response.ok) {
-            //     throw new Error('Registration failed');
-            // }
-
-            // // Registration successful, handle the response if needed
-            // const result = await response.json();
-            // console.log('Registration successful:', result);
-            navigation.navigate("Sign In", { signUpSuccess: 1 })
+                })).then(async prop => {
+                    const result = await prop.json()
+                    if(!result?.userEmail) {
+                        Alert.alert('Sign Up Failed', result)
+                        throw new Error('Sign up failed');
+                    }
+                    console.log("Signup res: ",result)
+                    navigation.navigate("Sign In", { signUpSuccess: 1 })
+                })
+            
         } catch (error) {
             Alert.alert('Error registering user:', error);
         } finally {

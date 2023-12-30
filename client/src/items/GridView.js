@@ -29,7 +29,6 @@ const numColumns = 2;
 
 export default function PharmacyListGrid({ navigation }){
   const renderItem = ({ item, index }) => {
-    console.log(item.empty);
     if (item.empty === true) {
       return <View style={[styles.item, styles.itemInvisible]} />;
     }

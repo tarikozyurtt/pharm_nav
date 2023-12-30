@@ -2,6 +2,23 @@ import * as React from 'react';
 import { View, StyleSheet, Dimensions, StatusBar, Text, ScrollView } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 
+const comments = [
+  { user_name: 'Ali C.', content: 'It is a long established fact that a reader will be distracted by the readable content of a page.' },
+  { user_name: 'Mehmet S.', content: 'It is a long established fact.' },
+  // Add more comments as needed
+];
+
+const renderComment = (user_name, content, commentNumber) => (
+  <View style={styles.commentView} key={commentNumber}>
+    <Text style={styles.commentName}>
+      {user_name}
+    </Text>
+    <Text style={styles.commentText}>
+      {content}
+    </Text>
+  </View>
+);
+
 const FirstRoute = () => (
   <View style={styles.scene} >
     <Text style={styles.description}>
@@ -17,7 +34,8 @@ const SecondRoute = () => (
   <View style={styles.scene} >
     <ScrollView style={{width:"100%"}}>
       <View style={styles.scrollView}>
-        <View style={styles.commentView}>
+      {comments.map((comment, index) => renderComment(comment.user_name, comment.content, index))}
+        {/* <View style={styles.commentView}>
           <Text style={styles.commentName}>
             Emre Y.
           </Text>
@@ -70,7 +88,7 @@ const SecondRoute = () => (
           <Text style={styles.commentText}>
             It is a long established fact that a reader.
           </Text>
-        </View>
+        </View> */}
 
 
       </View>
@@ -114,11 +132,11 @@ export default class TabViewExample extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop:30
+    marginTop:20
   },
   scene: {
-    width:"100%",
-    height:300
+    width: "100%",
+    height: "100%",
   },
   description:{
     textAlign:"center",

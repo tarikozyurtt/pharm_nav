@@ -1,16 +1,43 @@
-import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, Alert } from 'react-native';
 import React, { useState } from 'react';
 
 export default function SupportScreen() {
-
-  const [pharmacyName, setPharmacyName] = useState('');
-  const [pharmacistName, setPharmacistName] = useState('');
   const [email, setEmail] = useState('');
-  const [code, setCode] = useState('');
   const [problem, setProblem] = useState('');
 
+  const sendTicket = async (body) => {
+    return await fetch('https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/sendticket', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: body,
+    });
+  };
+
   const sendSupport = () => {
-    
+    try {
+      sendTicket(
+        JSON.stringify({
+          email: email,
+          description: problem
+      })).then(async prop => {
+          const result = await prop.json()
+          console.log("profile res: ", result)
+          if (!result?.email) {
+            Alert.alert('There has been a problem...')
+            throw new Error('There has been a problem...');
+          }
+          else{
+            Alert.alert('You succesfully submitted your form!')
+          }
+        })
+        
+
+    } catch (error) {
+      Alert.alert('There has been a problem...');
+    } 
+
   };
  
   return (
@@ -21,10 +48,7 @@ export default function SupportScreen() {
       />
       <Text style={styles.headerText}>Support</Text>
 
-      <TextInput style={styles.input} placeholder={'Pharmacy Name'} placeholderTextColor="#AFB1B6"  value={pharmacyName} onChangeText={(text)=>setPharmacyName(text)}/>
-      <TextInput style={styles.input} placeholder={'Pharmacist Name'} placeholderTextColor="#AFB1B6"  value={pharmacistName} onChangeText={(text)=>setPharmacistName(text)}/>
       <TextInput style={styles.input} placeholder={'Email'} placeholderTextColor="#AFB1B6" value={email} onChangeText={(text)=>setEmail(text)}/>   
-      <TextInput style={styles.input} placeholder={'Prescription Code'} placeholderTextColor="#AFB1B6" value={code} onChangeText={(text)=>setCode(text)}/>   
       <TextInput  multiline={true} style={styles.inputProblem} placeholder={'Explain Your Problem'} placeholderTextColor="#AFB1B6" value={problem} onChangeText={(text)=>setProblem(text)}/>   
       
       <TouchableOpacity
