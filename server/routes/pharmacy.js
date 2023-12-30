@@ -57,11 +57,11 @@ router.post("/pharmacy", async (req, res) => {
     {
       $project: {
         pharmImage: 1,
-        ownerId: 1,
-        name: 1,
-        drugs: 1, // Include the entire drugs object in the output
+        name: 1, // Include the entire drugs object in the output
         location: 1,
-        isPremium: 1,
+        distance: 1,
+        rating: 1,
+        _id: 1
       },
     },
   ];

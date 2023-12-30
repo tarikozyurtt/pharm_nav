@@ -44,7 +44,7 @@ router.post("/registerPatient", async (req, res) => {
   // await user.save();
 
   // Return the new user as JSON
-  res.status(200).json({ userName: newUser.name, userEmail: newUser.email });
+  res.status(200).json({ userName: newUser.name, userEmail: newUser.email, userId: newUser._id });
 });
 
 router.post("/history", async (req, res) => {
@@ -120,7 +120,7 @@ router.post("/registerPharmacist", async (req, res) => {
   console.log("The host is:")
   console.log(req.get('host'))
   // Return the new user as JSON
-  res.status(200).json({ userName: newUser.name, userEmail: newUser.email, pharmacyName: newUser.pharmacyName, location: newPharmacy.location });
+  res.status(200).json({ userId: newUser._id, userName: newUser.name, userEmail: newUser.email, pharmacyName: newUser.pharmacyName, location: newPharmacy.location });
 });
 
 router.post("/sendticket", async (req, res) => {
