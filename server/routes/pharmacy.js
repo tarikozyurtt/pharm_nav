@@ -7,6 +7,7 @@ const codeSchema = require("../models/codeSchema");
 const pharmacySchema = require("../models/pharmacySchema");
 const router = express.Router();
 require("dotenv").config();
+
 router.post("/pharmacy", async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
@@ -72,7 +73,6 @@ router.post("/pharmacy", async (req, res) => {
   });
 });
 
-module.exports = router;
 
 router.post("/pharmacyinfo", async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
@@ -203,3 +203,5 @@ router.post("/addrating", async (req, res) => {
     pharmacyData: pharmacyData ?? [],
   });
 });
+
+module.exports = router;

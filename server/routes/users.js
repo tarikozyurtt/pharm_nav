@@ -110,7 +110,7 @@ router.post("/registerPharmacist", async (req, res) => {
     return res.status(500).send(error);
 
   }
-
+  console.log(req.get('host'))
   // Return the new user as JSON
   res.status(200).json({ userName: newUser.name, userEmail: newUser.email, pharmacyName: newUser.pharmacyName, location: newPharmacy.location });
 });
@@ -138,5 +138,6 @@ router.get("/user", auth, async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
+
 
 module.exports = router;
