@@ -95,7 +95,8 @@ router.post("/registerPharmacist", async (req, res) => {
 
     name: req.body.pharmacyName,
     location: req.body.location,
-    ownerId: newUser._id
+    ownerId: newUser._id,
+    host: req.get('host')
 
 
 
@@ -110,7 +111,6 @@ router.post("/registerPharmacist", async (req, res) => {
     return res.status(500).send(error);
 
   }
-  console.log(req.get('host'))
   // Return the new user as JSON
   res.status(200).json({ userName: newUser.name, userEmail: newUser.email, pharmacyName: newUser.pharmacyName, location: newPharmacy.location });
 });
