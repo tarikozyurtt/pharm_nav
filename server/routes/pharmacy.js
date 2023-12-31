@@ -148,7 +148,7 @@ router.post("/update", async (req, res) => {
 
   let bulkOperations = [];
   for (let [drugName, quantityChange] of Object.entries(drugs)) {
-    if (!pharmacyData.drugs[drugName]) {
+    if (pharmacyData.drugs[drugName] == undefined) {
       return res
         .status(401)
         .json({ success: false, message: "Drug in request not found" });
