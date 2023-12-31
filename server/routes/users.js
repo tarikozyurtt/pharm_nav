@@ -12,41 +12,50 @@ const { mongoose } = require("mongoose");
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
 // Create a new user
-router.post("/register", async (req, res) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  await connectDB();
-
-  const newUser = new User({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    userRole: req.body.userRole,
-  });
+router.post('/register', async (req, res) => {
   try {
-    await newUser.save();
-  } catch (error) {
-    if (error.code === 11000) {
-      // MongoDB duplicate key error
-      return res.status(400).send("Email already exists");
-    } else {
-      return res.status(500).send(error);
+    const { name, email, password, userRole } = req.body;
+
+    // Validate the incoming data
+    if (!name || !email || !password || !userRole) {
+      return res.status(400).send('Validation failed: Name, email, password, and userRole are required');
     }
+
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header(
+      'Access-Control-Allow-Headers',
+      'Origin, X-Requested-With, Content-Type, Accept'
+    );
+
+    await connectDB();
+
+    const newUser = new User({
+      name,
+      email,
+      password,
+      userRole,
+    });
+
+    try {
+      await newUser.save();
+      res.status(200).json({
+        userName: newUser.name,
+        userEmail: newUser.email,
+      });
+    } catch (error) {
+      if (error.code === 11000) {
+        // MongoDB duplicate key error
+        return res.status(400).send('Email already exists');
+      } else {
+        return res.status(500).send(error);
+      }
+    }
+  } catch (validationError) {
+    console.error(validationError);
+    return res.status(400).send('Validation failed: Name, email, password, and userRole are required');
   }
-
-  //const { name, email, password } = req.body;
-
-  // Create a new user with the provided name, email, and password
-
-  // const user = new User(newUser);
-  // await user.save();
-
-  // Return the new user as JSON
-  res.status(200).json({ userName: newUser.name, userEmail: newUser.email });
 });
+
 
 router.get("/user", auth, async (req, res) => {
   try {
