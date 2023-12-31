@@ -249,6 +249,5 @@ router.post("/getCodeDrugs", async (req, res) => {
 
   res.status(200).json({ drugs: drugInfo?.drugs ?? [] });
 });
-//
 
 module.exports = router;
