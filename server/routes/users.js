@@ -14,6 +14,7 @@ const axios = require("axios");
 const FormData = require("form-data");
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const pharmacySchema = require("../models/pharmacySchema");
+const codeSchema = require("../models/codeSchema");
 
 // Create a new user
 router.post("/registerPatient", async (req, res) => {
@@ -230,5 +231,30 @@ router.get("/user", auth, async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
+
+router.post("/getCodeDrugs", async (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  await connectDB();
+  const { code } = req.body;
+  const drugInfo = await codeSchema.findOne({ code: code });
+
+  if (!drugInfo) {
+    return res.status(400).send("Prescription not found");
+  }
+
+  res
+    .status(200)
+    .json({ drugs: drugInfo?.drugs ?? [] });
+});
+//
+
+
+
+
+
 
 module.exports = router;
