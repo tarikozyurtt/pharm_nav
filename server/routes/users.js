@@ -117,10 +117,10 @@ router.post("/registerPharmacist", async (req, res) => {
 
     return res.status(500).send(error);
   }
-  console.log("The host is:");
-  console.log(req.get("host"));
+
   // Return the new user as JSON
   res.status(200).json({
+    pharmacyId: newPharmacy._id,
     userId: newUser._id,
     userName: newUser.name,
     userEmail: newUser.email,
@@ -246,15 +246,8 @@ router.post("/getCodeDrugs", async (req, res) => {
     return res.status(400).send("Prescription not found");
   }
 
-  res
-    .status(200)
-    .json({ drugs: drugInfo?.drugs ?? [] });
+  res.status(200).json({ drugs: drugInfo?.drugs ?? [] });
 });
 //
-
-
-
-
-
 
 module.exports = router;
