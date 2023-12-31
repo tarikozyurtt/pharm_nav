@@ -193,7 +193,7 @@ router.post("/image", async (req, res) => {
             message: "success",
             image: response.data.result.variants[0],
           });
-          await dbConnect();
+          await connectDB();
           await pharmacySchema.updateOne(
             { _id: fields.pharmacyId },
             { $push: { pharmImages: response.data.result.variants[0] } }
