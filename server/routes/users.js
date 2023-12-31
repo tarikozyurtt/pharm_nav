@@ -13,6 +13,7 @@ const fs = require("fs").promises;
 const axios = require("axios");
 const FormData = require("form-data");
 const { MongoClient, ServerApiVersion } = require("mongodb");
+const pharmacySchema = require("../models/pharmacySchema");
 
 // Create a new user
 router.post("/registerPatient", async (req, res) => {
@@ -169,6 +170,8 @@ router.post("/image", async (req, res) => {
   );
   const formatted = formidable();
   formatted.parse(req, async (err, fields, files) => {
+    if (!fields?.pharmacyId)
+      return res.status(400).send("Pharmacy id is required");
     try {
       const file = await fs.readFile(files.file.filepath);
       var form = new FormData();
@@ -190,6 +193,11 @@ router.post("/image", async (req, res) => {
             message: "success",
             image: response.data.result.variants[0],
           });
+          await connectDB();
+          await pharmacySchema.updateOne(
+            { _id: fields.pharmacyId },
+            { $push: { pharmImages: response.data.result.variants[0] } }
+          );
         })
         .catch((error) => {
           console.log(error);
