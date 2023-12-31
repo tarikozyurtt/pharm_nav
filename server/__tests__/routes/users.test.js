@@ -19,7 +19,7 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
   it('should create a new user', async () => {
     const userData = {
       name: 'John Doe',
-      email: 'john.do2e@example.com',
+      email: 'john.doe4@example.com',
       password: 'password123',
       userRole: 'patient',
     };
@@ -37,6 +37,26 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
       userId: expect.any(String),
     });
     // expect(saveMock).toHaveBeenCalledWith(); // You can add more specific checks if needed
-    
+
+  });
+
+  it('should handle duplicate email error', async () => {
+    const userData = {
+      name: 'John Doe',
+      email: 'john.doe4@example.com',
+      password: 'password123',
+      userRole: 'patient',
+    };
+
+    jest.spyOn(User.prototype, 'save').mockRejectedValueOnce({
+      code: 11000, // Simulate MongoDB duplicate key error
+    });
+
+    const response = await request('https://astonishing-capybara-516671.netlify.app')
+      .post('/.netlify/functions/index/registerPatient')
+      .send(userData);
+
+    expect(response.status).toBe(400);
+    expect(response.text).toBe('Email already exists');
   });
 });
