@@ -19,7 +19,7 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
   it('should create a new user', async () => {
     const userData = {
       name: 'John Doe',
-      email: 'john.doe8@example.com',
+      email: 'john.doe9@example.com',
       password: 'password123',
       userRole: 'patient',
     };
@@ -43,7 +43,7 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
   it('should handle duplicate email error', async () => {
     const userData = {
       name: 'John Doe',
-      email: 'john.doe8@example.com',
+      email: 'john.doe9@example.com',
       password: 'password123',
       userRole: 'patient',
     };
@@ -76,4 +76,43 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
     expect(response.text).toBe('Validation failed: Name, email, password, and userRole are required');
   });
 
+});
+
+
+// Test for /.netlify/functions/index/history
+const historyRoute = require('./../../routes/users'); 
+
+app.use(bodyParser.json());
+app.use('/api', historyRoute);
+
+jest.mock('./../../helpers/dbMongoose'); // Mock the connectDB function
+
+describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/history', () => {
+  it('should return past prescriptions for a valid user', async () => {
+    // Assuming you have a valid user in your database with past prescriptions
+    const existingUser = new User({
+      name: 'John Doe',
+      email: 'john.doe9@example.com',
+      password: 'password123',
+      userRole: 'patient',
+      pastPrescriptions: [],
+    });
+
+    await existingUser.save();
+
+    const userData = {
+      userId: existingUser._id, // Use the _id of the existing user
+    };
+
+    const response = await request('https://astonishing-capybara-516671.netlify.app')
+      .post('/.netlify/functions/index/history')
+      .send(userData);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      pastPrescriptions: existingUser.pastPrescriptions,
+    });
+  });
+
+  // Add more test cases as needed
 });
