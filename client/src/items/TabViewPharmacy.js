@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, StyleSheet, Dimensions, StatusBar, Text, ScrollView } from 'react-native';
+import { View, StyleSheet, Dimensions, StatusBar, Text, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 
 const comments = [
@@ -34,63 +34,22 @@ const SecondRoute = () => (
   <View style={styles.scene} >
     <ScrollView style={{width:"100%"}}>
       <View style={styles.scrollView}>
+        <View style={styles.commentView2}>
+
+          <View style={{flex:3, borderWidth:1, marginRight:10, borderRadius:7, backgroundColor:"#fff"}}>
+            <TextInput style={styles.commentInput} />
+          </View>
+
+          <View style={{flex:1, borderRadius:7, backgroundColor:"#6F70FF"}}>
+            <TouchableOpacity style={styles.commentButton}>
+              <TextInput  multiline={true} style={{textAlign:"center", color:"#fff", fontSize:16, height:60}}>Send</TextInput>
+            </TouchableOpacity>
+          </View>
+          
+          
+        </View>
+        
       {comments.map((comment, index) => renderComment(comment.user_name, comment.content, index))}
-        {/* <View style={styles.commentView}>
-          <Text style={styles.commentName}>
-            Emre Y.
-          </Text>
-          <Text style={styles.commentText}>
-            It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.
-            The point of using Lorem Ipsum is that it 
-          </Text>
-        </View>
-
-        <View style={styles.commentView}>
-          <Text style={styles.commentName}>
-            Ali C.
-          </Text>
-          <Text style={styles.commentText}>
-            It is a long established fact that a reader will be distracted by the readable content of a page.
-          </Text>
-        </View>
-
-        <View style={styles.commentView}>
-          <Text style={styles.commentName}>
-            Mehmet S.
-          </Text>
-          <Text style={styles.commentText}>
-            It is a long established fact.
-          </Text>
-        </View>
-
-        <View style={styles.commentView}>
-          <Text style={styles.commentName}>
-            Fatma Y.
-          </Text>
-          <Text style={styles.commentText}>
-            It is a long established fact that a reader will be distracted by the readable content of a page.
-          </Text>
-        </View>
-
-        <View style={styles.commentView}>
-          <Text style={styles.commentName}>
-            Ayşe C.
-          </Text>
-          <Text style={styles.commentText}>
-            It is a long established fact that a reader will be distracted by the readable content of a page story page match comics.
-          </Text>
-        </View>
-
-        <View style={styles.commentView}>
-          <Text style={styles.commentName}>
-            Ahmet C.
-          </Text>
-          <Text style={styles.commentText}>
-            It is a long established fact that a reader.
-          </Text>
-        </View> */}
-
-
       </View>
       
     </ScrollView>
@@ -114,6 +73,10 @@ export default class TabViewExample extends React.Component {
   };
 
   render() {
+    const { prop } = this.props;
+
+    console.log('Prop value:', prop);
+    
     return (
       <TabView
         renderTabBar={renderTabBar}
@@ -165,5 +128,18 @@ const styles = StyleSheet.create({
     paddingHorizontal:7,
     paddingBottom:5,
     color:"#FFFFFF"
+  },
+  commentView2:{
+    flexDirection:"row",
+    width:"85%",
+    marginVertical:10
+
+  },
+  commentInput:{
+    height:50
+  },
+  commentButton:{
+    height:50,
+    justifyContent: 'center',
   }
 });

@@ -9,25 +9,59 @@ import CarouselCardDetailPage from '../../items/CarouselCardDetailPage';
 export const SLIDER_WIDTH = Dimensions.get('window').width + 80
 export const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.7)
 
+const getDetail = async (body) => {
+    return await fetch('https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/pharmacyinfo', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: body,
+    });
+  };
+  
+
 export default function PharmacyDetailScreen({ route, navigation }) {
-    const prop = route?.params;
+    // const prop = route?.params;
+    prop = "65908a251f6935f91a5f460e"
     const [prescriptionCode, setPrescriptionCode] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [name, setName] = useState('');
 
     useEffect(() => {
-        console.log("detail", prop)
-    }, []);
+    console.log("detail -> ", prop)
+    
+        try {
+            getDetail(
+            JSON.stringify({
+              pharmId: prop
+            })).then(async prop => {
+              const result = await prop.json()
+              // if (!result?.userEmail) {
+              //   Alert.alert('Sign Up Failed', result)
+              //   throw new Error('Sign up failed');
+              // }
+              console.log("detail res: ", result)
+              setName(result.pharmacyData.name)
+            })
+    
+        } catch (error) {
+          Alert.alert('Error registering user:', error);
+        } finally {
+          // setIsLoading(false);
+        }
+    
+      }, []);
 
     return (
         <View style={styles.mainContainer}>
             <View style={styles.container}>
                 <View style={styles.detailImages}>
-                    <Image source={{ uri: prop.image }} style={styles.image}/>
+                    <Image source={{ uri: prop.pharmImage }} style={styles.image}/>
                 </View>
 
                 <View style={styles.containerDetail}>
                     <View style={styles.leftAlign}>
-                        <Text style={styles.leftAlignText}>Pharmacy Faruk</Text>
+                        <Text style={styles.leftAlignText}>{name}</Text>
                     </View>
                     <View style={styles.rightAlign}>
                         <Text style={styles.rightAlignText}>400 m</Text>
@@ -46,7 +80,7 @@ export default function PharmacyDetailScreen({ route, navigation }) {
                 </View>
 
             </View>
-            <TabViewExample />
+            {/* <TabViewExample prop={prop} /> */}
         </View>
     );
 }

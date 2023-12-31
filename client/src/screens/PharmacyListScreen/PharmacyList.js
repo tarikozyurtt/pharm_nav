@@ -12,28 +12,28 @@ import SvgComponentBlack from '../../items/star_black';
 //     { name: 'Pharmacy Robert', image: "https://lh3.googleusercontent.com/p/AF1QipPYkRw61EBuQXCHzBwb21c4PMt1cOkCkJJNjT7d=w1080-h608-p-no-v0", distance: 500, star: 2 },
 // ];
 
-const carouselData = [
-    {
-      title: "Eczane DHMFNBMSND",
-      body: "Ut tincidunt tincidunt erat. Sed cursus turpis vitae tortor. Quisque malesuada placerat nisl. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.",
-      imgUrl: "https://lh3.googleusercontent.com/p/AF1QipPYkRw61EBuQXCHzBwb21c4PMt1cOkCkJJNjT7d=w1080-h608-p-no-v0",
-    },
-    {
-      title: "Eczane Feyza",
-      body: "Aenean ut eros et nisl sagittis vestibulum. Donec posuere vulputate arcu. Proin faucibus arcu quis ante. Curabitur at lacus ac velit ornare lobortis. ",
-      imgUrl: "https://www.zengrafik.com/wp-content/uploads/2020/12/yeni-eczane-tabelasi-12.jpg",
-    },
-    {
-      title: "Eczane Yalı",
-      body: "Phasellus ullamcorper ipsum rutrum nunc. Nullam quis ante. Etiam ultricies nisi vel augue. Aenean tellus metus, bibendum sed, posuere ac, mattis non, nunc.",
-      imgUrl: "https://artozalit.com/wp-content/uploads/2022/12/eczane-tabelasi.jpg",
-    },
-  ]
+// const carouselData = [
+//     {
+//       title: "Eczane DHMFNBMSND",
+//       body: "Ut tincidunt tincidunt erat. Sed cursus turpis vitae tortor. Quisque malesuada placerat nisl. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.",
+//       imgUrl: "https://lh3.googleusercontent.com/p/AF1QipPYkRw61EBuQXCHzBwb21c4PMt1cOkCkJJNjT7d=w1080-h608-p-no-v0",
+//     },
+//     {
+//       title: "Eczane Feyza",
+//       body: "Aenean ut eros et nisl sagittis vestibulum. Donec posuere vulputate arcu. Proin faucibus arcu quis ante. Curabitur at lacus ac velit ornare lobortis. ",
+//       imgUrl: "https://www.zengrafik.com/wp-content/uploads/2020/12/yeni-eczane-tabelasi-12.jpg",
+//     },
+//     {
+//       title: "Eczane Yalı",
+//       body: "Phasellus ullamcorper ipsum rutrum nunc. Nullam quis ante. Etiam ultricies nisi vel augue. Aenean tellus metus, bibendum sed, posuere ac, mattis non, nunc.",
+//       imgUrl: "https://artozalit.com/wp-content/uploads/2022/12/eczane-tabelasi.jpg",
+//     },
+//   ]
 
 const formatData = (data, numColumns) => {
     const numberOfFullRows = Math.floor(data?.length / numColumns);
 
-    let numberOfElementsLastRow = data.length - (numberOfFullRows * numColumns);
+    let numberOfElementsLastRow = data?.length - (numberOfFullRows * numColumns);
     while (numberOfElementsLastRow !== numColumns && numberOfElementsLastRow !== 0) {
         data.push({ key: `blank-${numberOfElementsLastRow}`, empty: true });
         numberOfElementsLastRow++;
@@ -49,7 +49,7 @@ export default function PharmacyListScreen({ route, navigation }) {
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        console.log(data)
+        console.log("data -> ", data)
     }, []);
 
     const renderSvgComponents = (x) => {
@@ -71,12 +71,13 @@ export default function PharmacyListScreen({ route, navigation }) {
             return <View style={[styles.item, styles.itemInvisible]} />;
         }
         return (
-            <TouchableOpacity style={styles.item} onPress={() => navigation.navigate("PharmacyDetail", item)}>
-                <Image source={{ uri: item.image }} style={styles.image2} />
+            <TouchableOpacity style={styles.item} onPress={() => {navigation.navigate("PharmacyDetail", item._id)
+            console.log("item : ", item._id)}}>
+                <Image source={{ uri: item.pharmImage }} style={styles.image2} />
                 <Text style={styles.itemName}>{item.name}</Text>
                 <Text style={styles.itemDistance}>{item.distance} m</Text>
                 <View style={styles.rating}>
-                {renderSvgComponents(Math.floor(data?.rating?.totalRatings / data?.rating?.totalUsers))}
+                {renderSvgComponents(Math.floor(item?.rating?.totalRatings / item?.rating?.totalUsers))}
                 </View>
             </TouchableOpacity>
         );
@@ -86,10 +87,10 @@ export default function PharmacyListScreen({ route, navigation }) {
         <View style={styles.mainContainer}>
             <Text style={styles.headerText}>Sponsor Pharmacies</Text>
             <View style={styles.carousel}>
-                <CarouselCards data={carouselData}/>
+                <CarouselCards data={data.premiumPharmacies}/>
             </View>
             <FlatList
-                data={formatData(data, numColumns)}
+                data={formatData(data.pharmacies, numColumns)}
                 style={styles.containerFlatList}
                 renderItem={renderItem}
                 numColumns={numColumns}

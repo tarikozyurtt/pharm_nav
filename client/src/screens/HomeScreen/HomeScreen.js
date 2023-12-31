@@ -27,11 +27,12 @@ export default function HomeScreen({ navigation }) {
                 return;
             }
 
-            Location.getCurrentPositionAsync({}).then((prop)=>{
-                setLocation({
-                latitude: prop.coords.latitude,
-                longitude: prop.coords.longitude
-            });
+            Location.getCurrentPositionAsync({}).then( async prop => {
+                await setLocation({
+                    latitude: prop.coords.latitude,
+                    longitude: prop.coords.longitude
+                });
+                console.log("current location: ", location)
             })
 
             
@@ -56,7 +57,8 @@ export default function HomeScreen({ navigation }) {
                 })).then(async prop =>{
                     // console.log("Search Result1: ", prop)
                     const result = await prop.json();
-                    console.log("Search Result: ", result)
+                    console.log("Search Result: ", result.pharmacyData.pharmacies[0])
+                    console.log("::: ", result.pharmacyData.premiumPharmacies[0])
                     navigation.navigate("PharmacyList", result )
                 })
                 
