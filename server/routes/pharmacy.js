@@ -139,7 +139,7 @@ router.post("/update", async (req, res) => {
 
   await connectDB();
 
-  const { drugs, pharmId } = req.query;
+  const { drugs, pharmId } = req.body;
 
   let pharmacyData = await pharmacySchema.findById(pharmId);
   if (!pharmacyData) {
