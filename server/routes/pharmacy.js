@@ -130,7 +130,7 @@ router.post("/addcomment", async (req, res) => {
     pharmacyData: pharmacyData?.comments ?? [],
   });
 });
-router.post("/update", async (req, res) => {
+router.get("/update", async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
@@ -139,7 +139,7 @@ router.post("/update", async (req, res) => {
 
   await connectDB();
 
-  const { drugs, pharmId } = req.body;
+  const { drugs, pharmId } = req.query;
 
   let pharmacyData = await pharmacySchema.findById(pharmId);
   if (!pharmacyData) {
