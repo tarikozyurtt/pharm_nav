@@ -56,7 +56,7 @@ router.post("/pharmacy", async (req, res) => {
     },
     {
       $project: {
-        pharmImage: 1,
+        pharmImages: 1,
         name: 1, // Include the entire drugs object in the output
         location: 1,
         distance: 1,
