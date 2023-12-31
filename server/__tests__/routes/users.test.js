@@ -19,7 +19,7 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
   it('should create a new user', async () => {
     const userData = {
       name: 'John Doe',
-      email: 'john.doe4@example.com',
+      email: 'john.doe8@example.com',
       password: 'password123',
       userRole: 'patient',
     };
@@ -43,7 +43,7 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
   it('should handle duplicate email error', async () => {
     const userData = {
       name: 'John Doe',
-      email: 'john.doe4@example.com',
+      email: 'john.doe8@example.com',
       password: 'password123',
       userRole: 'patient',
     };
@@ -59,4 +59,21 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
     expect(response.status).toBe(400);
     expect(response.text).toBe('Email already exists');
   });
+
+  it('should handle missing required fields in the request body', async () => {
+    // Omit the 'name' field to simulate a missing required field
+    const userData = {
+      email: 'john.doe3@example.com',
+      password: 'password123',
+      userRole: 'patient',
+    };
+
+    const response = await request('https://astonishing-capybara-516671.netlify.app')
+      .post('/.netlify/functions/index/registerPatient')
+      .send(userData);
+
+    expect(response.status).toBe(400);
+    expect(response.text).toBe('Validation failed: Name, email, password, and userRole are required');
+  });
+
 });
