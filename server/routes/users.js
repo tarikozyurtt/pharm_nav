@@ -75,6 +75,7 @@ router.post("/history", async (req, res) => {
     .status(200)
     .json({ pastPrescriptions: userInfo?.pastPrescriptions ?? [] });
 });
+
 //
 router.post("/registerPharmacist", async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");

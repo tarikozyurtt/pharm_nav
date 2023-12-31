@@ -4,10 +4,10 @@ const request = require('supertest');
 const express = require('express');
 const bodyParser = require('body-parser');
 
-// Adjust these paths based on your project structure
-const registerPatientRoute = require('./../../routes/users'); // Assuming the route is in 'routes' folder and named 'users.js'
-const connectDB = require('./../../helpers/dbMongoose'); // Assuming the 'dbMongoose.js' file is in the 'helpers' folder
-const User = require('./../../models/users'); // Assuming the 'users.js' file is in the 'models' folder
+const registerPatientRoute = require('./../../routes/users'); 
+const connectDB = require('./../../helpers/dbMongoose');
+const User = require('./../../models/users'); 
+const Pharmacy = require('./../../models/pharmacySchema'); 
 
 const app = express();
 app.use(bodyParser.json());
@@ -19,7 +19,7 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
   it('should create a new user', async () => {
     const userData = {
       name: 'John Doe',
-      email: 'john.doe9@example.com',
+      email: 'john.doe12@example.com',
       password: 'password123',
       userRole: 'patient',
     };
@@ -43,7 +43,7 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
   it('should handle duplicate email error', async () => {
     const userData = {
       name: 'John Doe',
-      email: 'john.doe9@example.com',
+      email: 'john.doe11@example.com',
       password: 'password123',
       userRole: 'patient',
     };
@@ -82,7 +82,6 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
 // Test for /.netlify/functions/index/history
 const historyRoute = require('./../../routes/users'); 
 
-app.use(bodyParser.json());
 app.use('/api', historyRoute);
 
 jest.mock('./../../helpers/dbMongoose'); // Mock the connectDB function
@@ -112,6 +111,48 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
     expect(response.body).toEqual({
       pastPrescriptions: existingUser.pastPrescriptions,
     });
+  });
+
+  // Add more test cases as needed
+});
+
+// Test for /.netlify/functions/index/registerPharmacist
+const registerPharmacistRoute = require('./../../routes/users');
+
+app.use('/api', registerPharmacistRoute);
+
+jest.mock('./../../helpers/dbMongoose'); // Mock the connectDB function
+
+describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/registerPharmacist', () => {
+  it('should register a new pharmacist and pharmacy', async () => {
+    const userData = {
+      userRole: '2',
+      email: 'test_omer4@hotmail.com',
+      password: 'test_omer2',
+      name: 'test_omer2',
+      pharmacyName: 'test_omer2',
+      location: {
+        type: 'Point',
+        coordinates: [16, 16],
+      },
+    };
+
+    const saveUserMock = jest.spyOn(User.prototype, 'save').mockResolvedValueOnce();
+
+    const response = await request('https://astonishing-capybara-516671.netlify.app')
+      .post('/.netlify/functions/index/registerPharmacist')
+      .send(userData);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      pharmacyId: expect.any(String),
+      userId: expect.any(String),
+      userName: userData.name,
+      userEmail: userData.email,
+      pharmacyName: userData.pharmacyName,
+      location: userData.location,
+    });
+    expect(saveUserMock).toHaveBeenCalled();
   });
 
   // Add more test cases as needed
