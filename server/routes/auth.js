@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const connectDB = require("../helpers/dbMongoose");
 const router = express.Router();
 require("dotenv").config();
+
 router.post("/authenticate", async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(

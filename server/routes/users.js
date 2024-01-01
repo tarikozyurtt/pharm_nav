@@ -23,12 +23,20 @@ router.post("/registerPatient", async (req, res) => {
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
   );
+
+  // Validate the incoming data
+  const { name, email, password, userRole } = req.body;
+  if (!name || !email || !password || !userRole) {
+    return res
+      .status(400)
+      .send('Validation failed: Name, email, password, and userRole are required');
+  }
   await connectDB();
   const newUser = new User({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    userRole: req.body.userRole,
+    name: name,
+    email: email,
+    password: password,
+    userRole: userRole,
   });
   try {
     await newUser.save();
@@ -40,13 +48,6 @@ router.post("/registerPatient", async (req, res) => {
       return res.status(500).send(error);
     }
   }
-
-  //const { name, email, password } = req.body;
-
-  // Create a new user with the provided name, email, and password
-
-  // const user = new User(newUser);
-  // await user.save();
 
   // Return the new user as JSON
   res.status(200).json({
@@ -74,6 +75,7 @@ router.post("/history", async (req, res) => {
     .status(200)
     .json({ pastPrescriptions: userInfo?.pastPrescriptions ?? [] });
 });
+
 //
 router.post("/registerPharmacist", async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
@@ -248,6 +250,5 @@ router.post("/getCodeDrugs", async (req, res) => {
 
   res.status(200).json({ drugs: drugInfo?.drugs ?? [] });
 });
-//
 
 module.exports = router;

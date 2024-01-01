@@ -8,7 +8,6 @@ const pharmacySchema = require("../models/pharmacySchema");
 const { default: mongoose } = require("mongoose");
 const router = express.Router();
 require("dotenv").config();
-
 router.post("/pharmacy", async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
@@ -136,6 +135,7 @@ router.post("/addcomment", async (req, res) => {
     pharmacyData: pharmacyData?.comments ?? [],
   });
 });
+
 router.post("/update", async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
