@@ -23,10 +23,9 @@ router.post("/pharmacy", async (req, res) => {
   }
 
   const { drugs } = codeData;
-  let objectId = mongoose.Types.ObjectId(codeData.patientId);
   await userSchema.findOneAndUpdate(
     {
-      _id: objectId,
+      _id: codeData.patientId,
     },
     {
       $push: {
