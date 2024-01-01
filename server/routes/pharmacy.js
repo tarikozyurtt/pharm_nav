@@ -107,7 +107,7 @@ router.post("/addcomment", async (req, res) => {
 
   await connectDB();
 
-  const { pharmId, comment } = req.body;
+  const { pharmId, comment, patientId } = req.body;
   /*
     {
       name:"user1"
@@ -118,7 +118,10 @@ router.post("/addcomment", async (req, res) => {
     { _id: pharmId },
     {
       $push: {
-        comments: comment,
+        comments: {
+          comment: comment,
+          patientId: patientId
+        },
       },
     }
   );
