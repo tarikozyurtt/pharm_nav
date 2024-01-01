@@ -1,15 +1,15 @@
-import React from 'react'
-import { View } from "react-native"
+import React, { useEffect } from 'react'
+import { View, TouchableOpacity } from "react-native"
 import Carousel, { Pagination } from 'react-native-snap-carousel'
-import data from './data'
 import CarouselCardItemListPage, { SLIDER_WIDTH, ITEM_WIDTH } from './CarouselCardItemListPage'
 
-const CarouselCardListPage = () => {
-    const [index, setIndex] = React.useState(0)
+const CarouselCardListPage = ({ data }) => {
+const [index, setIndex] = React.useState(0)
   const isCarousel = React.useRef(null)
 
   return (
     <View>
+      <TouchableOpacity onPress={() => navigation.replace("PharmacyDetail")}>
       <Carousel
         layout="tinder"
         layoutCardOffset={9}
@@ -21,6 +21,7 @@ const CarouselCardListPage = () => {
         onSnapToItem={(index) => setIndex(index)}
         useScrollView={true}
       />
+      </TouchableOpacity>
       <Pagination
         dotsLength={data.length}
         activeDotIndex={index}

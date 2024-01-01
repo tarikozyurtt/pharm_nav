@@ -26,13 +26,16 @@ export default function Dashboard() {
     <Tabs.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarStyle: {
+        tabBarHideOnKeyboard: true,
+        tabBarStyle: [{
+          display: 'flex',
           backgroundColor: "#6f70ff",
         },
+        null]
       })}
-      tabBarOptions={{
-        keyboardHidesTabBar: true, // This hides the tab bar when the keyboard is open
-      }}
+      // tabBarOptions={{
+      //   keyboardHidesTabBar: true, // This hides the tab bar when the keyboard is open
+      // }}
       keyboardAvoidingView="position" // Use 'position' to avoid the tab bar overlapping the keyboard
     >
       <Tabs.Screen name="Home" component={HomeScreen} options={{ title: "Home", tabBarShowLabel: false, headerShown: false, tabBarIcon: (props) => <Ionicon name="home-outline" style={{ color: getTabBarIconColor(props.focused) }} size={25} {...props} /> }} />
