@@ -1,18 +1,23 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { useAuth } from '../../AuthContext';
 
 export default function WelcomeScreen({ navigation }) {
+    const { user, signOut } = useAuth();
 
     return (
         <View style={styles.container}>
-            <Text style={styles.headerText}>Looking for the right pharmacy for your prescription?</Text>
+            <View style={styles.headerView}>
+                <Text style={styles.headerText}>Looking for the right pharmacy for your prescription?</Text>
+            </View>
             <Image
                 source={require('../../../assets/pharm-nav-icon.png')}
                 style={styles.logo}
             />
             <TouchableOpacity
-                onPress={() => navigation.navigate('Sign In')}
-            ><Text style={styles.letsGoText}>Lets Go {'>'}</Text>
+                onPress={() => user ? navigation.navigate('Dashboard') : navigation.navigate('Sign In')}
+                style={styles.letsGoButton}
+            ><Text style={styles.letsGoText}>Let's Go {'>'}</Text>
             </TouchableOpacity>
         </View>
     );
@@ -25,9 +30,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start',
     },
+    headerView:{
+        width:"80%",
+        marginTop: 30,
+        borderRadius:10,
+
+    },
     headerText: {
-        fontSize: 30,
-        marginTop: '20%',
+        width:"100%",
+        textAlign: 'center',
+        fontSize: 25,
+        padding:5
     },
     logo: {
         width: 250,
@@ -35,9 +48,15 @@ const styles = StyleSheet.create({
         borderRadius: 150,
         marginTop: '10%',
     },
+    letsGoButton:{
+        borderWidth:2,
+        marginTop: '30%',
+        borderRadius:7
+
+    },
     letsGoText: {
         color: 'black',
         fontSize: 20,
-        marginTop: '30%',
+        padding:7,
     },
 });
