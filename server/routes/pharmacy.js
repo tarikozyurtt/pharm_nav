@@ -17,6 +17,9 @@ router.post("/pharmacy", async (req, res) => {
 
   await connectDB();
   const { code, location } = req.body;
+  if (!location) {
+    return res.status(401).json({ message: "Location not found" });
+  }
   let codeData = await codeSchema.findOne({ code: code });
   if (!codeData) {
     return res.status(401).json({ message: "Code is incorrect" });
@@ -114,13 +117,18 @@ router.post("/addcomment", async (req, res) => {
       comment: "Very good pharmacy",
     }
   */
+  let patient = await userSchema.findById(patientId);
+  if (!patient) {
+    return res.status(401).json({ message: "Patient not found" });
+  }
+
   let pharmacyData = await pharmacySchema.findOneAndUpdate(
     { _id: pharmId },
     {
       $push: {
         comments: {
-          comment: comment,
-          patientId: patientId,
+          content: comment,
+          user_name: patient.name,
         },
       },
     },
