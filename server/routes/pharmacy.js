@@ -16,7 +16,6 @@ router.post("/pharmacy", async (req, res) => {
   );
 
   await connectDB();
-
   const { code, location } = req.body;
   let codeData = await codeSchema.findOne({ code: code });
   if (!codeData) {
