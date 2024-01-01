@@ -7,7 +7,6 @@ const codeSchema = require("../models/codeSchema");
 const pharmacySchema = require("../models/pharmacySchema");
 const router = express.Router();
 require("dotenv").config();
-
 router.post("/pharmacy", async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
