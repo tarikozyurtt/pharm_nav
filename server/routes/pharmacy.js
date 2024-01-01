@@ -115,13 +115,12 @@ router.post("/addcomment", async (req, res) => {
     }
   */
   let pharmacyData = await pharmacySchema.findOneAndUpdate(
-
     { _id: pharmId },
     {
       $push: {
         comments: {
           comment: comment,
-          patientId: patientId
+          patientId: patientId,
         },
       },
     },
@@ -130,7 +129,6 @@ router.post("/addcomment", async (req, res) => {
   if (!pharmacyData) {
     return res.status(401).json({ message: "Pharmacy not found" });
   }
-
 
   res.status(200).json({
     pharmacyData: pharmacyData?.comments ?? [],
@@ -197,20 +195,28 @@ router.post("/addrating", async (req, res) => {
 
   await connectDB();
 
-  const { pharmId, rating } = req.body;
+  const { pharmId, rating, userId } = req.body;
 
   let pharmacyData = await pharmacySchema.findOneAndUpdate(
-    { _id: pharmId },
+    { _id: pharmId, "rating.raters": { $ne: userId } },
     {
       $inc: {
         "rating.totalRatings": rating,
-        "rating.totalUsers": 1,
       },
+      $push: {
+        "rating.raters": userId,
+      },
+    },
+    {
+      new: true,
     }
   );
   if (!pharmacyData) {
-    return res.status(401).json({ message: "Pharmacy not found" });
+    return res.status(401).json({ message: "Error on user or pharmacy" });
   }
+  pharmacyData.rating.totalRatings = (
+    pharmacyData.rating.totalRatings / pharmacyData.rating.raters.length
+  ).toFixed(2);
 
   res.status(200).json({
     pharmacyData: pharmacyData ?? [],
