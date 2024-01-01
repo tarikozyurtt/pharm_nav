@@ -115,6 +115,7 @@ router.post("/addcomment", async (req, res) => {
     }
   */
   let pharmacyData = await pharmacySchema.findOneAndUpdate(
+
     { _id: pharmId },
     {
       $push: {
@@ -123,11 +124,13 @@ router.post("/addcomment", async (req, res) => {
           patientId: patientId
         },
       },
-    }
+    },
+    { returnOriginal: false }
   );
   if (!pharmacyData) {
     return res.status(401).json({ message: "Pharmacy not found" });
   }
+
 
   res.status(200).json({
     pharmacyData: pharmacyData?.comments ?? [],
