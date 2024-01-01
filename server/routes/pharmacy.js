@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const connectDB = require("../helpers/dbMongoose");
 const codeSchema = require("../models/codeSchema");
 const pharmacySchema = require("../models/pharmacySchema");
+const { default: mongoose } = require("mongoose");
 const router = express.Router();
 require("dotenv").config();
 router.post("/pharmacy", async (req, res) => {
@@ -22,9 +23,10 @@ router.post("/pharmacy", async (req, res) => {
   }
 
   const { drugs } = codeData;
+  let objectId = mongoose.Types.ObjectId(codeData.patientId);
   await userSchema.findOneAndUpdate(
     {
-      _id: codeData.patientId,
+      _id: objectId,
     },
     {
       $push: {
