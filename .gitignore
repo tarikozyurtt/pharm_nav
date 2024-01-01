@@ -1,2 +1,5 @@
 # Ignore the "server/node_modules" folder
 server/node_modules
+node_modules
+.gitignore
+.env
