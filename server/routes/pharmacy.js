@@ -16,6 +16,7 @@ router.post("/pharmacy", async (req, res) => {
   );
 
   await connectDB();
+  pharmacySchema.collection.createIndex({ location: "2dsphere" })
   const { code, location } = req.body;
   let codeData = await codeSchema.findOne({ code: code });
   if (!codeData) {
