@@ -107,7 +107,7 @@ router.post("/addcomment", async (req, res) => {
 
   await connectDB();
 
-  const { pharmId, comment } = req.body;
+  const { pharmId, comment, patientId } = req.body;
   /*
     {
       name:"user1"
@@ -115,16 +115,22 @@ router.post("/addcomment", async (req, res) => {
     }
   */
   let pharmacyData = await pharmacySchema.findOneAndUpdate(
+
     { _id: pharmId },
     {
       $push: {
-        comments: comment,
+        comments: {
+          comment: comment,
+          patientId: patientId
+        },
       },
-    }
+    },
+    { returnOriginal: false }
   );
   if (!pharmacyData) {
     return res.status(401).json({ message: "Pharmacy not found" });
   }
+
 
   res.status(200).json({
     pharmacyData: pharmacyData?.comments ?? [],
