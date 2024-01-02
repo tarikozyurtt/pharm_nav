@@ -57,7 +57,7 @@ router.post("/registerPatient", async (req, res) => {
   });
 });
 
-router.post("/history", async (req, res) => {
+router.post("/history", auth, async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
@@ -131,7 +131,7 @@ router.post("/registerPharmacist", async (req, res) => {
   });
 });
 
-router.post("/sendticket", async (req, res) => {
+router.post("/sendticket", auth, async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
@@ -164,7 +164,7 @@ router.post("/sendticket", async (req, res) => {
   });
 });
 
-router.post("/image", async (req, res) => {
+router.post("/image", auth, async (req, res) => {
   console.log("here");
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
@@ -234,7 +234,7 @@ router.get("/user", auth, async (req, res) => {
   }
 });
 
-router.post("/getCodeDrugs", async (req, res) => {
+router.post("/getCodeDrugs", auth, async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
