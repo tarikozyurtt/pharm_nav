@@ -1,30 +1,26 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, Dimensions, StatusBar, Text, ScrollView, TextInput, TouchableOpacity, Button } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 
 const addRating = async (body) => {
   return await fetch('https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/addrating', {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json'
-      },
-      body: body,
-  }); 
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: body,
+  });
 };
 
-// const comments = [
-//   { user_name: 'Ali C.', content: 'It is a long established fact that a reader will be distracted by the readable content of a page.' },
-//   { user_name: 'Mehmet S.', content: 'It is a long established fact.' },
-//   { user_name: 'Ali C.', content: 'It is a long established fact that a reader will be distracted by the readable content of a page.' },
-//   { user_name: 'Mehmet S.', content: 'It is a long established fact.' },
-//   { user_name: 'Ali C.', content: 'It is a long established fact that a reader will be distracted by the readable content of a page.' },
-//   { user_name: 'Mehmet S.', content: 'It is a long established fact.' },
-//   { user_name: 'Ali C.', content: 'It is a long established fact that a reader will be distracted by the readable content of a page.' },
-//   { user_name: 'Mehmet S.', content: 'It is a long established fact.' },
-//   { user_name: 'Ali C.', content: 'It is a long established fact that a reader will be distracted by the readable content of a page.' },
-//   { user_name: 'Mehmet S.', content: 'It is a long established fact.' },
-//   // Add more comments as needed
-// ];
+const addComment = async (body) => {
+  return await fetch('https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/addcomment', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: body,
+  });
+};
 
 const renderComment = (user_name, content, commentNumber) => (
   <View style={styles.commentView} key={commentNumber}>
@@ -44,40 +40,61 @@ const FirstRoute = (props) => (
     </Text>
   </View>
 );
-const SecondRoute = (props) => (
-  <View style={styles.scene} >
-    <ScrollView style={{ width: "100%" }}>
-      <View style={styles.scrollView}>
-        <View style={styles.commentView2}>
 
-          <View style={{ flex: 3, borderWidth: 1, marginRight: 10, borderRadius: 7, backgroundColor: "#fff" }}>
-            <TextInput  multiline={true} style={styles.commentInput} />
+const SecondRoute = (props) => {
+  const [commentInput, setCommentInput] = useState('');
+
+  const handleSendButtonPress = () => {
+    console.log('Comment Input:', commentInput);
+    try {
+        addComment(JSON.stringify({ pharmId: props.prop.pharmId, comment: commentInput, patientId: props.prop.userId }))
+        .then(async prop => {
+          const result = await prop.json()
+
+          console.log("add comment res: ", result)
+        })
+
+    } catch (error) {
+      Alert.alert('Error registering user:', error);
+    } finally {
+      // setIsLoading(false);
+    }
+  };
+
+  return (
+    <View style={styles.scene}>
+      <ScrollView style={{ width: '100%' }}>
+        <View style={styles.scrollView}>
+          <View style={styles.commentView2}>
+            <View style={{ flex: 3, borderWidth: 1, marginRight: 10, borderRadius: 7, backgroundColor: '#fff' }}>
+              <TextInput
+                multiline={true}
+                style={styles.commentInput}
+                value={commentInput}
+                onChangeText={(text) => setCommentInput(text)}
+              />
+            </View>
+
+            <View style={{ flex: 1, borderRadius: 7, backgroundColor: '#6F70FF' }}>
+              <TouchableOpacity style={styles.commentButton} onPress={handleSendButtonPress}>
+                <Text style={{ textAlign: 'center', color: '#fff', fontSize: 16 }}>Send</Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
-          <View style={{ flex: 1, borderRadius: 7, backgroundColor: "#6F70FF" }}>
-            <TouchableOpacity style={styles.commentButton}>
-              <Text style={{ textAlign: "center", color: "#fff", fontSize: 16}}>Send</Text>
-            </TouchableOpacity>
-          </View>
-
-
+          {props?.prop?.comments?.map((comment, index) => renderComment(comment.user_name, comment.content, index))}
         </View>
+      </ScrollView>
 
-        {props?.prop?.map((comment, index) => renderComment(comment.user_name, comment.content, index))}
-      </View>
-    </ScrollView>
-    
-
-    <TouchableOpacity onPress={()=> {
-      // setRatingVisible(true)
-      // addRating(JSON.stringify({pharmId, rating, userId}))
-    }}>
+      <TouchableOpacity onPress={() => { console.log(props) }}>
         <View style={styles.butonCont}>
           <Text style={styles.addratingtext}>Add Rating</Text>
         </View>
       </TouchableOpacity>
-  </View>
-);
+    </View>
+  );
+};
+
 const renderTabBar = props => (
   <TabBar
     {...props}
@@ -106,7 +123,7 @@ export default class TabViewExample extends React.Component {
         navigationState={this.state}
         renderScene={SceneMap({
           first: () => <FirstRoute prop={prop.description} />,
-          second: () => <SecondRoute prop={prop.comments} />,
+          second: () => <SecondRoute prop={prop} />,
         })}
         onIndexChange={index => this.setState({ index })}
         initialLayout={{ width: Dimensions.get('window').width }}

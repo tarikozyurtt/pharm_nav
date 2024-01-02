@@ -8,7 +8,7 @@ const CarouselCardItemListPage = ({ item, index, navigation }) => {
   console.log("carosel item: ", item, index)
   return (
     <View style={styles.container} key={index}>
-      <TouchableOpacity onPress={() => navigation.navigate("PharmacyDetail", {user_id: item._id, distance: item.distance, uri: item.pharmImages[0]})}>
+      <TouchableOpacity onPress={() => navigation.navigate("PharmacyDetail", {pharmId: item._id, distance: item.distance, uri: item.pharmImages[0]})}>
       {item?.pharmImages && (
         <Image source={{ uri: item.pharmImages[0] }} style={styles.image} />
       )}

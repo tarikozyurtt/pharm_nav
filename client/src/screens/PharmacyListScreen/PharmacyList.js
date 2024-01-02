@@ -74,7 +74,7 @@ export default function PharmacyListScreen({ route, navigation }) {
             <TouchableOpacity style={styles.item} onPress={() => {
                 // console.log("asdasd")
                 // console.log("item : ", item)
-                navigation.navigate("PharmacyDetail", {user_id: item._id, distance: Math.floor(item.distance), uri: item.pharmImages[0]})
+                navigation.navigate("PharmacyDetail", {pharmId: item._id, distance: Math.floor(item.distance), uri: item.pharmImages[0]})
             }}>
                 {item?.pharmImages && (
                     <Image source={{ uri: item.pharmImages[0] }} style={styles.image2} />

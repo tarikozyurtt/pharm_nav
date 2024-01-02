@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Text, TextInput, Button, TouchableOpacity, Image, StyleSheet, Alert, ActivityIndicator, Keyboard, TouchableWithoutFeedback, SafeAreaView, Dimensions } from 'react-native';
-import Ionicon from "@expo/vector-icons/Ionicons"
+import { View, Text, Image, StyleSheet, Alert, Dimensions } from 'react-native';
 import SvgComponentBlack from '../../items/star_black';
 import SvgComponentYellow from '../../items/star_yellow';
 import TabViewExample from '../../items/TabViewPharmacy';
+import { useAuth } from '../../AuthContext';
 import CarouselCardDetailPage from '../../items/CarouselCardDetailPage';
 
 export const SLIDER_WIDTH = Dimensions.get('window').width + 80
@@ -36,6 +36,7 @@ const getDetail = async (body) => {
 
 export default function PharmacyDetailScreen({ route, navigation }) {
     const prop = route?.params;
+    const { user, signOut } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [name, setName] = useState('');
     const [uri] = useState(prop.uri);
@@ -50,16 +51,16 @@ export default function PharmacyDetailScreen({ route, navigation }) {
         try {
             getDetail(
                 JSON.stringify({
-                    pharmId: prop.user_id
-                })).then(async prop => {
-                    const result = await prop.json()
+                    pharmId: prop.pharmId
+                })).then(async res => {
+                    const result = await res.json()
                     // if (!result?.userEmail) {
                     //   Alert.alert('Sign Up Failed', result)
                     //   throw new Error('Sign up failed');
                     // }
                     console.log("detail res: ", result)
                     setName(result.pharmacyData.name)
-                    setTabviewprops({comments: result.pharmacyData.comments, description: result.pharmacyData.name})
+                    setTabviewprops({comments: result.pharmacyData.comments, description: result.pharmacyData.name, pharmId: prop.pharmId, userId: user.userId})
                     setRating(Math.floor(result.pharmacyData.rating.totalRatings))
                 })
 
