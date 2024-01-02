@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const RegisterUser = async (body) => {
-  return await fetch('https://splendorous-praline-960c1f.netlify.app/.netlify/functions/index/authenticate', {
+  return await fetch('https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/registerPharmacist', {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json',
@@ -20,7 +20,11 @@ function SignupPage({ setIsLoggedIn }) {
     password: '',
     location: '',
     description:'',
-    photos: [],
+    phoneNum:"",
+    address:"",
+    photos: {},
+    latitude:0,
+    longitude:0
   });
   const navigate = useNavigate();
 
@@ -29,53 +33,78 @@ function SignupPage({ setIsLoggedIn }) {
   };
 
   const handleFileChange = (e) => {
-    setUserData({ ...userData, photos: [...userData.photos, ...e.target.files] });
+    console.log("e.target.files", e.target.files)
+    setUserData({ ...userData, photos: e.target.files[0] });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const body = {
       userRole:"2",
       email:userData.email,
-      password:"pharm6",
+      password:userData.password,
       name: userData.name,
-      pharmacyName:"examplename15",
+      pharmacyName:userData.pharmacyName,
       location:{
       type: "Point",
-      coordinates:[15,15]
-    }
+      coordinates:[userData.longitude,userData.latitude]
+      },
+      description: userData.description,
+      phoneNum:userData.phoneNum,
+      address:userData.address
     }
     try {
       RegisterUser(
-        JSON.stringify({
-          name: userData.name,
-          email: userData.email,
-          password: userData.password,
-          location: userData.location
-        })
-      ).then( async prop =>{
+        JSON.stringify(body))
+        .then( async prop =>{
           if(prop.status == 200){
             const result = await prop.json()
             console.log("result:",result);
+
+
+            let formData = new FormData();
+            formData.append("file", userData.photos);
+            formData.append("pharmacyId", result.pharmacyId);
+            [...formData.entries()].forEach(e => console.log(e))
+
+            try {
+              await fetch('https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/image', {
+                method: 'POST',
+                body: formData,
+              }).then( async (prop)=>{
+                if(prop.status == 200){
+                  const result = await prop.json()
+                  console.log("image success:",result)
+                }
+                else{
+                  console.log("Error occured")
+                }
+              })
+            } catch (error) {
+              console.log("error: ",error);
+            }
+            
+            setIsLoggedIn(true);
+            //navigate('/dashboard',{state:{id:result.userId}});
           }
           else{
-            throw new Error("Error occured")
+            alert("Somethings are wrong")
           }
       })
     } catch (error) {
       console.log("error: ",error)
     }
-    
-    // Registration logic here
-    setIsLoggedIn(true);
-    navigate('/dashboard');
   };
 
   const handleLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
-        const locationStr = `Lat: ${position.coords.latitude}, Lon: ${position.coords.longitude}`;
-        setUserData({ ...userData, location: locationStr });
+        const locationStr = `${position.coords.latitude.toFixed(2)}, ${position.coords.longitude.toFixed(2)}`;
+        
+        setUserData({ ...userData,location: locationStr, longitude: position.coords.longitude, latitude: position.coords.latitude});
+        console.log(userData.location)
+
       }, () => {
         alert('Unable to retrieve your location');
       });
@@ -87,20 +116,23 @@ function SignupPage({ setIsLoggedIn }) {
   return (
     <div className="space-y-4">
 
-      <div className=' my-20'>
+      <div className=' my-10'>
         <p className='text-center font-bold text-3xl text-[#6F70FF]'>
           PharmNav Admin Panel
         </p>
       </div>
 
-      <div className='grid grid-cols-1 w-1/6 mx-auto'>
+      <div className='grid grid-cols-1 w-1/5 mx-auto'>
+        <div className='grid grid-cols-2'>
+          <div className='mb-4 mr-2'>
+            <input type="text" name="name" placeholder="Name" onChange={handleInputChange} className="p-2 border border-gray-300 rounded w-full" />
+          </div>
+          <div className='mb-4'>
+            <input type="text" name="pharmacyName" placeholder="Pharmacy Name" onChange={handleInputChange} className="p-2 border border-gray-300 rounded w-full" />
+          </div>
+        </div>
 
-        <div className='mb-4'>
-          <input type="text" name="name" placeholder="Name" onChange={handleInputChange} className="p-2 border border-gray-300 rounded w-full" />
-        </div>
-        <div className='mb-4'>
-          <input type="text" name="pharmacyName" placeholder="Pharmacy Name" onChange={handleInputChange} className="p-2 border border-gray-300 rounded w-full" />
-        </div>
+
         <div className='mb-4'>
           <input type="email" name="email" placeholder="Email" onChange={handleInputChange} className="p-2 border border-gray-300 rounded w-full" />
         </div>
@@ -108,11 +140,17 @@ function SignupPage({ setIsLoggedIn }) {
           <input type="password" name="password" placeholder="Password" onChange={handleInputChange} className="p-2 border border-gray-300 rounded w-full" />
         </div>
         <div className='mb-4'>
-          <input type="text" name="description" placeholder="Description" onChange={handleInputChange} className="p-2 border border-gray-300 rounded w-full" />
+          <input type="text" name="phoneNum" placeholder="Phone Number" onChange={handleInputChange} className="p-2 border border-gray-300 rounded w-full" />
+        </div>
+        <div className='mb-4'>
+          <input type="text" name="address" placeholder="Address" onChange={handleInputChange} className="p-2 border border-gray-300 rounded w-full" />
+        </div>
+        <div className='mb-4'>
+          <textarea rows={3} name="description" placeholder="Description" onChange={handleInputChange} className="p-2 border border-gray-300 rounded w-full" />
         </div>
         <div className='mb-4'>
           <input type="text" readOnly={true} name="location" placeholder="Current Location" value={userData.location} onChange={handleInputChange} className="p-2 border border-gray-300 rounded w-1/2 mr-5" />
-          <button type="button" onClick={handleLocation} className="py-2 px-4 bg-blue-500 text-white rounded w-2/5">Get Loc.</button>
+          <button onClick={handleLocation} className="py-2 px-4 bg-blue-500 text-white rounded w-2/5">Get Loca.</button>
         </div>
         <div className='mb-4'>
           <input type="file" multiple onChange={handleFileChange} className="p-2 border border-gray-300 rounded w-full" />
