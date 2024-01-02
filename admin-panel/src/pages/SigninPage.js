@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 const authenticateUser = async (body) => {
-  return await fetch('https://splendorous-praline-960c1f.netlify.app/.netlify/functions/index/authenticate', {
+  return await fetch('https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/authenticate', {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json',
@@ -21,19 +21,27 @@ function SigninPage({ setIsLoggedIn }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      authenticateUser(
+        JSON.stringify({
+          email: email,
+          password: password,
+        })
+      ).then( async prop =>{
+        if(prop.status == 200){
+          const result = await prop.json()
+          console.log("result:",result);
+          setIsLoggedIn(true);
+          navigate('/dashboard',{state:{id:result.userInfo.userId}});
+        }
+        else{
+          alert("Email or Password is wrong")
+        }
+    })
+    } catch (error) {
+      console.log("error: ",error)
+    }
     
-    /*const response = await authenticateUser(
-      JSON.stringify({
-        email: email,
-        password: password,
-      })
-    )
-
-    const result = await response.json();*/
-    
-
-    setIsLoggedIn(true);
-    navigate('/dashboard');
   };
 
   const navigateToSignup = () => {
@@ -48,7 +56,7 @@ function SigninPage({ setIsLoggedIn }) {
         </p>
       </div>
 
-      <div className='grid grid-cols-1 w-1/6 mx-auto'>
+      <div className='grid grid-cols-1 w-1/5 mx-auto'>
         <div className='mb-4'>
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="p-2 border border-gray-300 rounded w-full" />
         </div>
