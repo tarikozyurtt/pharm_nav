@@ -9,54 +9,73 @@ import CarouselCardDetailPage from '../../items/CarouselCardDetailPage';
 export const SLIDER_WIDTH = Dimensions.get('window').width + 80
 export const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.7)
 
+const renderSvgComponents = (x) => {
+    const components = [];
+
+    for (let i = 0; i < 5; i++) {
+        if (i < x) {
+            components.push(<SvgComponentYellow key={i} />);
+        } else {
+            components.push(<SvgComponentBlack key={i} />);
+        }
+    }
+
+    return components;
+};
+
 const getDetail = async (body) => {
     return await fetch('https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/pharmacyinfo', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: body,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: body,
     });
-  };
-  
+};
+
 
 export default function PharmacyDetailScreen({ route, navigation }) {
-    // const prop = route?.params;
-    prop = "65908a251f6935f91a5f460e"
-    const [prescriptionCode, setPrescriptionCode] = useState('');
+    const prop = route?.params;
     const [isLoading, setIsLoading] = useState(false);
     const [name, setName] = useState('');
+    const [uri] = useState(prop.uri);
+    const [rating, setRating] = useState(0);
+    const [distance, setDistance] = useState(0);
+    const [tabviewprops, setTabviewprops] = useState({});
 
     useEffect(() => {
-    console.log("detail -> ", prop)
-    
+        // console.log("detail -> ", prop)
+        setDistance(Math.floor(prop.distance))
+
         try {
             getDetail(
-            JSON.stringify({
-              pharmId: prop
-            })).then(async prop => {
-              const result = await prop.json()
-              // if (!result?.userEmail) {
-              //   Alert.alert('Sign Up Failed', result)
-              //   throw new Error('Sign up failed');
-              // }
-              console.log("detail res: ", result)
-              setName(result.pharmacyData.name)
-            })
-    
+                JSON.stringify({
+                    pharmId: prop.user_id
+                })).then(async prop => {
+                    const result = await prop.json()
+                    // if (!result?.userEmail) {
+                    //   Alert.alert('Sign Up Failed', result)
+                    //   throw new Error('Sign up failed');
+                    // }
+                    console.log("detail res: ", result)
+                    setName(result.pharmacyData.name)
+                    setTabviewprops({comments: result.pharmacyData.comments, description: result.pharmacyData.name})
+                    setRating(Math.floor(result.pharmacyData.rating.totalRatings))
+                })
+
         } catch (error) {
-          Alert.alert('Error registering user:', error);
+            Alert.alert('Error registering user:', error);
         } finally {
-          // setIsLoading(false);
+            // setIsLoading(false);
         }
-    
-      }, []);
+
+    }, []);
 
     return (
         <View style={styles.mainContainer}>
             <View style={styles.container}>
                 <View style={styles.detailImages}>
-                    <Image source={{ uri: prop.pharmImage }} style={styles.image}/>
+                    <Image source={{ uri: uri }} style={styles.image} />
                 </View>
 
                 <View style={styles.containerDetail}>
@@ -64,23 +83,19 @@ export default function PharmacyDetailScreen({ route, navigation }) {
                         <Text style={styles.leftAlignText}>{name}</Text>
                     </View>
                     <View style={styles.rightAlign}>
-                        <Text style={styles.rightAlignText}>400 m</Text>
+                        <Text style={styles.rightAlignText}>{distance} m</Text>
                     </View>
                 </View>
 
                 <View style={styles.containerDetail}>
                     <View style={styles.leftAlign}>
-                        <SvgComponentYellow />
-                        <SvgComponentYellow />
-                        <SvgComponentYellow />
-                        <SvgComponentYellow />
-                        <SvgComponentBlack />
-                        <Text style={{ fontSize: 12, fontWeight: "bold", marginLeft: 2 }}> 4.5</Text>
+                        {renderSvgComponents(rating)} 
+                        <Text style={{ fontSize: 12, fontWeight: "bold", marginLeft: 2 }}>{rating}</Text>
                     </View>
                 </View>
 
             </View>
-            {/* <TabViewExample prop={prop} /> */}
+            <TabViewExample prop={tabviewprops} />
         </View>
     );
 }
@@ -93,6 +108,7 @@ const styles = StyleSheet.create({
         width: "90%",
         flexDirection: 'row', // Arrange children in a row
         justifyContent: 'space-between', // Spread children to each end of the row
+        paddingTop: 5
     },
     leftAlign: {
         alignItems: 'flex-start', // Align children to the start (left)
@@ -125,7 +141,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     image: {
-        width: ITEM_WIDTH+20,
+        width: ITEM_WIDTH + 20,
         height: 200,
-      },
+    },
 });
