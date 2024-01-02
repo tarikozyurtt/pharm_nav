@@ -13,9 +13,10 @@ const searchPrescriptionCode = async (body) => {
     }); 
 };
 
-export default function HomeScreen({ navigation }) {
+export default function HomeScreen({ route, navigation }) {
+    const prop = route.params  || '';
     const { user, signOut } = useAuth();
-    const [prescriptionCode, setPrescriptionCode] = useState('');
+    const [prescriptionCode, setPrescriptionCode] = useState(prop.code);
     const [isLoading, setIsLoading] = useState(false);
     const [location, setLocation] = useState(null);
 
@@ -28,7 +29,7 @@ export default function HomeScreen({ navigation }) {
             }
 
             Location.getCurrentPositionAsync({}).then( async prop => {
-                await setLocation({
+                setLocation({
                     latitude: prop.coords.latitude,
                     longitude: prop.coords.longitude
                 });
@@ -50,17 +51,23 @@ export default function HomeScreen({ navigation }) {
             try {
                 Keyboard.dismiss();
                 setIsLoading(true);
-
+                console.log("body", JSON.stringify({
+                    code: 'ABC',
+                    location: location,
+                }))
+                if(location){
                 searchPrescriptionCode(JSON.stringify({
                     code: 'ABC',
                     location: location,
                 })).then(async prop =>{
                     // console.log("Search Result1: ", prop)
                     const result = await prop.json();
-                    console.log("Search Result: ", result.pharmacyData.pharmacies[0])
-                    console.log("::: ", result.pharmacyData.premiumPharmacies[0])
+                    console.log("Search Result: ", JSON.stringify(result))
                     navigation.navigate("PharmacyList", result )
-                })
+                })}
+                else{
+                    Alert.alert('Alert', 'An error occurred while searching. Please try again.');
+                }
                 
             } catch (error) {
                 console.error('Error searching prescription code:', error);

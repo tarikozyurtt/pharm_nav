@@ -63,7 +63,7 @@ export default function SignInScreen({ navigation }) {
                         throw new Error('Sign in failed');
                     }
                     signIn(result.userToken, result.userInfo);
-                    navigation.replace("Dashboard")
+                    navigation.replace("Dashboard", '')
                 })
              
         } catch (error) {

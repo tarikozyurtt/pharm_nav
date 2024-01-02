@@ -3,25 +3,27 @@ import { View, TouchableOpacity } from "react-native"
 import Carousel, { Pagination } from 'react-native-snap-carousel'
 import CarouselCardItemListPage, { SLIDER_WIDTH, ITEM_WIDTH } from './CarouselCardItemListPage'
 
-const CarouselCardListPage = ({ data }) => {
+const CarouselCardListPage = ({ data, navigation }) => {
 const [index, setIndex] = React.useState(0)
   const isCarousel = React.useRef(null)
 
+  const renderCarouselItem = ({ item, index }) => {
+    return <CarouselCardItemListPage item={item} index={index} navigation={navigation} />;
+  };
+
   return (
     <View>
-      <TouchableOpacity onPress={() => navigation.replace("PharmacyDetail")}>
       <Carousel
         layout="tinder"
         layoutCardOffset={9}
         ref={isCarousel}
         data={data}
-        renderItem={CarouselCardItemListPage}
+        renderItem={renderCarouselItem}
         sliderWidth={SLIDER_WIDTH}
         itemWidth={ITEM_WIDTH}
         onSnapToItem={(index) => setIndex(index)}
         useScrollView={true}
       />
-      </TouchableOpacity>
       <Pagination
         dotsLength={data.length}
         activeDotIndex={index}

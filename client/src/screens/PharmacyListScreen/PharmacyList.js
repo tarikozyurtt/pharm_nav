@@ -54,30 +54,35 @@ export default function PharmacyListScreen({ route, navigation }) {
 
     const renderSvgComponents = (x) => {
         const components = [];
-      
+
         for (let i = 0; i < 5; i++) {
-          if (i < x) {
-            components.push(<SvgComponentYellow key={i} />);
-          } else {
-            components.push(<SvgComponentBlack key={i} />);
-          }
+            if (i < x) {
+                components.push(<SvgComponentYellow key={i} />);
+            } else {
+                components.push(<SvgComponentBlack key={i} />);
+            }
         }
-      
+
         return components;
-      };
+    };
 
     const renderItem = ({ item, index }) => {
         if (item.empty === true) {
             return <View style={[styles.item, styles.itemInvisible]} />;
         }
         return (
-            <TouchableOpacity style={styles.item} onPress={() => {navigation.navigate("PharmacyDetail", item._id)
-            console.log("item : ", item._id)}}>
-                <Image source={{ uri: item.pharmImage }} style={styles.image2} />
+            <TouchableOpacity style={styles.item} onPress={() => {
+                // console.log("asdasd")
+                // console.log("item : ", item)
+                navigation.navigate("PharmacyDetail", {user_id: item._id, distance: Math.floor(item.distance), uri: item.pharmImages[0]})
+            }}>
+                {item?.pharmImages && (
+                    <Image source={{ uri: item.pharmImages[0] }} style={styles.image2} />
+                )}
                 <Text style={styles.itemName}>{item.name}</Text>
-                <Text style={styles.itemDistance}>{item.distance} m</Text>
+                <Text style={styles.itemDistance}>{Math.floor(item.distance)} m</Text>
                 <View style={styles.rating}>
-                {renderSvgComponents(Math.floor(item?.rating?.totalRatings / item?.rating?.totalUsers))}
+                    {renderSvgComponents(Math.floor(item?.rating?.totalRatings / item?.rating?.totalUsers))}
                 </View>
             </TouchableOpacity>
         );
@@ -87,7 +92,7 @@ export default function PharmacyListScreen({ route, navigation }) {
         <View style={styles.mainContainer}>
             <Text style={styles.headerText}>Sponsor Pharmacies</Text>
             <View style={styles.carousel}>
-                <CarouselCards data={data.premiumPharmacies}/>
+                <CarouselCards data={data.premiumPharmacies} navigation={navigation} />
             </View>
             <FlatList
                 data={formatData(data.pharmacies, numColumns)}
