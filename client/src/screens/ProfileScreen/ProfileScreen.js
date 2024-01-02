@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { useAuth } from '../../AuthContext';
 
 const getHistory = async (body) => {
@@ -15,49 +15,43 @@ const getHistory = async (body) => {
 const PharmacyItem = ({ code, drugs, navigation }) => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => {navigation.replace("Dashboard", code)}}>
-      <Text style={styles.code}>{code}</Text>
-      <View style={styles.drugsContainer}>
-        {Object.entries(drugs).map(([drugName, quantity]) => (
-          <View key={drugName} style={styles.drugItem}>
-            <Text style={styles.drugName}>{drugName}</Text>
-            <Text style={styles.quantity}>{`Quantity: ${quantity}`}</Text>
-          </View>
-        ))}
-      </View>
+      <TouchableOpacity onPress={() => { navigation.replace("Dashboard", code) }}>
+        <Text style={styles.code}>{code}</Text>
+        <View style={styles.drugsContainer}>
+          {Object.entries(drugs).map(([drugName, quantity]) => (
+            <View key={drugName} style={styles.drugItem}>
+              <Text style={styles.drugName}>{drugName}</Text>
+              <Text style={styles.quantity}>{`Quantity: ${quantity}`}</Text>
+            </View>
+          ))}
+        </View>
       </TouchableOpacity>
     </View>
-    
+
   );
 };
 
 export default function ProfileScreen({ navigation }) {
   const { user, signOut } = useAuth();
-  const [history, setHistory] = useState([])
+  const [history, setHistory] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    console.log(user.userId)
-
-    try {
-      getHistory(
-        JSON.stringify({
-          userId: user.userId
-        })).then(async prop => {
-          const result = await prop.json()
-          // if (!result?.userEmail) {
-          //   Alert.alert('Sign Up Failed', result)
-          //   throw new Error('Sign up failed');
-          // }
-          console.log("profile res: ", result.pastPrescriptions)
-          setHistory(result.pastPrescriptions)
-        })
-
-    } catch (error) {
-      Alert.alert('Error registering user:', error);
-    } finally {
-      // setIsLoading(false);
-    }
-
+    // console.log(user.userId)
+    getHistory(
+      JSON.stringify({
+        userId: user.userId
+      })).then(async prop => {
+        const result = await prop.json()
+        console.log("profile res: ", result.pastPrescriptions)
+        setHistory(result.pastPrescriptions)
+      })
+      .catch(error => {
+        Alert.alert('Failed fetching history!', "Please try again.");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, []);
 
   const handleLogOut = async () => {
@@ -73,15 +67,25 @@ export default function ProfileScreen({ navigation }) {
   return (
     <View style={styles.main}>
       <ScrollView style={styles.slider}>
-      {history.map((data, index) => (
-        <PharmacyItem key={index} {...data} navigation={navigation} />
-      ))}
-      <TouchableOpacity
-        style={styles.button}
-        onPress={handleLogOut}
-      >
-        <Text style={styles.buttonText}>Log Out</Text>
-      </TouchableOpacity>
+        {!isLoading && (
+          history.map((data, index) => (
+            <PharmacyItem key={index} {...data} navigation={navigation} />
+          ))
+        )}
+        {!isLoading && (
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleLogOut}
+          >
+            <Text style={styles.buttonText}>Log Out</Text>
+          </TouchableOpacity>
+        )}
+        {isLoading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#0000ff" />
+            <Text>Loading history...</Text>
+          </View>
+        )}
       </ScrollView>
     </View>
 
@@ -93,10 +97,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    height: "100%",
   },
   slider: {
     width: "100%",
+    height: "100%",
   },
   text: {
     fontSize: 20,
@@ -145,5 +151,11 @@ const styles = StyleSheet.create({
   },
   quantity: {
     fontSize: 14,
+  },
+  loadingContainer: {
+    paddingTop: "50%",
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.3)', // Semi-transparent white background
   },
 });

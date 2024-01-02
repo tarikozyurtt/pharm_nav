@@ -10,11 +10,11 @@ const searchPrescriptionCode = async (body) => {
             'Content-Type': 'application/json'
         },
         body: body,
-    }); 
+    });
 };
 
 export default function HomeScreen({ route, navigation }) {
-    const prop = route.params  || '';
+    const prop = route.params || '';
     const { user, signOut } = useAuth();
     const [prescriptionCode, setPrescriptionCode] = useState(prop.code);
     const [isLoading, setIsLoading] = useState(false);
@@ -28,7 +28,7 @@ export default function HomeScreen({ route, navigation }) {
                 return;
             }
 
-            Location.getCurrentPositionAsync({}).then( async prop => {
+            Location.getCurrentPositionAsync({}).then(async prop => {
                 setLocation({
                     latitude: prop.coords.latitude,
                     longitude: prop.coords.longitude
@@ -36,7 +36,7 @@ export default function HomeScreen({ route, navigation }) {
                 console.log("current location: ", location)
             })
 
-            
+
         })();
     }, []);
 
@@ -48,34 +48,30 @@ export default function HomeScreen({ route, navigation }) {
             // Convert to uppercase
             const code = prescriptionCode.toUpperCase();
 
-            try {
-                Keyboard.dismiss();
-                setIsLoading(true);
-                console.log("body", JSON.stringify({
-                    code: 'ABC',
-                    location: location,
-                }))
-                if(location){
+            Keyboard.dismiss();
+            setIsLoading(true);
+            if (location) {
                 searchPrescriptionCode(JSON.stringify({
                     code: 'ABC',
                     location: location,
-                })).then(async prop =>{
-                    // console.log("Search Result1: ", prop)
+                })).then(async prop => {
                     const result = await prop.json();
                     console.log("Search Result: ", JSON.stringify(result))
-                    navigation.navigate("PharmacyList", result )
-                })}
-                else{
-                    Alert.alert('Alert', 'An error occurred while searching. Please try again.');
-                }
-                
-            } catch (error) {
-                console.error('Error searching prescription code:', error);
-                // Notify the user about the error
-                Alert.alert('Error', 'An error occurred while searching. Please try again.');
+                    if(result.message){
+                        throw new Error();
+                    }
+                    navigation.navigate("PharmacyList", result)
+                })
+                    .catch(error => {
+                        Alert.alert('Searching Prescription Code Failed!', "An error occurred while searching. Please try again.");
+                    })
+                    .finally(() => {
+                        setIsLoading(false);
+                    });
             }
-            finally {
-                setIsLoading(false); // Stop loading, whether the call was successful or not
+            else {
+                Alert.alert('Alert', 'Please make sure you given the location access properly.');
+                setIsLoading(false);
             }
         } else {
             // Notify the user about the invalid code

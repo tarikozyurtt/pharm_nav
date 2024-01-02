@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Dimensions, StatusBar, Text, ScrollView, TextInput, TouchableOpacity, Button } from 'react-native';
+import { View, StyleSheet, Dimensions, StatusBar, Text, ScrollView, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 
 const addRating = async (body) => {
@@ -43,22 +43,48 @@ const FirstRoute = (props) => (
 
 const SecondRoute = (props) => {
   const [commentInput, setCommentInput] = useState('');
+  const [comms, setComms] = useState(props?.prop?.comments)
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleAddRatingPress = () => {
+    // open popup give rating call service
+    console.log("rating -> ", props.prop.pharmId)
+    // setIsLoading(true);
+    // addComment(JSON.stringify({ pharmId: props.prop.pharmId, comment: commentInput, patientId: props.prop.userId }))
+    //   .then(async prop => {
+    //     const result = await prop.json()
+    //     console.log("add comment res: ", result)
+    //     setComms(result?.pharmacyData)
+    //     Alert.alert("Successfull!", "Your comment have been posted.")
+    //   })
+    //   .catch(error => {
+    //     Alert.alert('An Error Occured!', "Please try again.");
+    //   })
+    //   .finally(() => {
+    //     setCommentInput('');
+    //     setIsLoading(false);
+    // });
+
+  };
 
   const handleSendButtonPress = () => {
     console.log('Comment Input:', commentInput);
-    try {
-        addComment(JSON.stringify({ pharmId: props.prop.pharmId, comment: commentInput, patientId: props.prop.userId }))
-        .then(async prop => {
-          const result = await prop.json()
+    setIsLoading(true);
 
-          console.log("add comment res: ", result)
-        })
-
-    } catch (error) {
-      Alert.alert('Error registering user:', error);
-    } finally {
-      // setIsLoading(false);
-    }
+    addComment(JSON.stringify({ pharmId: props.prop.pharmId, comment: commentInput, patientId: props.prop.userId }))
+      .then(async prop => {
+        const result = await prop.json()
+        console.log("add comment res: ", result)
+        setComms(result?.pharmacyData)
+        Alert.alert("Successfull!", "Your comment have been posted.")
+      })
+      .catch(error => {
+        Alert.alert('An Error Occured!', "Please try again.");
+      })
+      .finally(() => {
+        setCommentInput('');
+        setIsLoading(false);
+    });
   };
 
   return (
@@ -74,19 +100,26 @@ const SecondRoute = (props) => {
                 onChangeText={(text) => setCommentInput(text)}
               />
             </View>
-
+            {!isLoading ? (
             <View style={{ flex: 1, borderRadius: 7, backgroundColor: '#6F70FF' }}>
               <TouchableOpacity style={styles.commentButton} onPress={handleSendButtonPress}>
                 <Text style={{ textAlign: 'center', color: '#fff', fontSize: 16 }}>Send</Text>
               </TouchableOpacity>
             </View>
+            ) : (
+              <View style={{ flex: 1, borderRadius: 7, backgroundColor: '#6F70FF' }}>
+                <TouchableOpacity style={styles.commentButton}>
+                  <Text style={{ textAlign: 'center', color: '#fff', fontSize: 16 }}>Sending..</Text>
+                </TouchableOpacity>
+              </View>
+              )}
           </View>
 
-          {props?.prop?.comments?.map((comment, index) => renderComment(comment.user_name, comment.content, index))}
+          {comms?.map((comment, index) => renderComment(comment.user_name, comment.content, index))}
         </View>
       </ScrollView>
 
-      <TouchableOpacity onPress={() => { console.log(props) }}>
+      <TouchableOpacity onPress={handleAddRatingPress}>
         <View style={styles.butonCont}>
           <Text style={styles.addratingtext}>Add Rating</Text>
         </View>
@@ -115,7 +148,7 @@ export default class TabViewExample extends React.Component {
   render() {
     const { prop } = this.props;
 
-    console.log('Prop value:', prop);
+    // console.log('Prop value:', prop);
 
     return (
       <TabView

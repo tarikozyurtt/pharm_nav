@@ -47,31 +47,30 @@ export default function SignInScreen({ navigation }) {
         else {
             setMandatoryFull(true)
         }
-        try {
-            Keyboard.dismiss();
-            setIsLoading(true);
 
-            authenticateUser(
-                JSON.stringify({
-                    email: email,
-                    password: password,
-                })).then(async prop => {
-                    const result = await prop.json();
-                    console.log("Res: ",result)
-                    if (!result?.userToken) {
-                        Alert.alert('Sign In Failed', 'Invalid email or password. Please try again.')
-                        throw new Error('Sign in failed');
-                    }
-                    signIn(result.userToken, result.userInfo);
-                    navigation.replace("Dashboard", '')
-                })
-             
-        } catch (error) {
-            Alert.alert('Sign In Failed', 'Invalid email or password. Please try again.');
-        } finally {
-            setIsLoading(false);
-            setPassword('')
-        }
+        Keyboard.dismiss();
+        setIsLoading(true);
+        authenticateUser(
+            JSON.stringify({
+                email: email,
+                password: password,
+            }))
+            .then(async prop => {
+                const result = await prop.json();
+                console.log("Res: ", result.message)
+                if (!result?.userToken) {
+                    throw new Error();
+                }
+                signIn(result.userToken, result.userInfo);
+                navigation.replace("Dashboard", '')
+            })
+            .catch(error => {
+                Alert.alert('Sign In Failed', "Email or password is incorrect");
+            })
+            .finally(() => {
+                setIsLoading(false);
+                setPassword('');
+            });
     };
 
     useEffect(() => {

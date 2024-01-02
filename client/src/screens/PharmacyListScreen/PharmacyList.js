@@ -4,32 +4,6 @@ import CarouselCards from '../../items/CarouselCardListPage';
 import SvgComponentYellow from '../../items/star_yellow';
 import SvgComponentBlack from '../../items/star_black';
 
-// const data = [
-//     { name: 'Pharmacy Faruk', image: "https://artozalit.com/wp-content/uploads/2022/12/eczane-tabelasi.jpg", distance: 100, star: 2 },
-//     { name: 'Pharmacy Emre', image: "https://www.zengrafik.com/wp-content/uploads/2020/12/yeni-eczane-tabelasi-12.jpg", distance: 200, star: 2 },
-//     { name: 'Pharmacy Yunus', image: "https://lh3.googleusercontent.com/p/AF1QipPYkRw61EBuQXCHzBwb21c4PMt1cOkCkJJNjT7d=w1080-h608-p-no-v0", distance: 300, star: 2 },
-//     { name: 'Pharmacy Hilmi', image: "https://www.zengrafik.com/wp-content/uploads/2020/12/yeni-eczane-tabelasi-12.jpg", distance: 400, star: 2 },
-//     { name: 'Pharmacy Robert', image: "https://lh3.googleusercontent.com/p/AF1QipPYkRw61EBuQXCHzBwb21c4PMt1cOkCkJJNjT7d=w1080-h608-p-no-v0", distance: 500, star: 2 },
-// ];
-
-// const carouselData = [
-//     {
-//       title: "Eczane DHMFNBMSND",
-//       body: "Ut tincidunt tincidunt erat. Sed cursus turpis vitae tortor. Quisque malesuada placerat nisl. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.",
-//       imgUrl: "https://lh3.googleusercontent.com/p/AF1QipPYkRw61EBuQXCHzBwb21c4PMt1cOkCkJJNjT7d=w1080-h608-p-no-v0",
-//     },
-//     {
-//       title: "Eczane Feyza",
-//       body: "Aenean ut eros et nisl sagittis vestibulum. Donec posuere vulputate arcu. Proin faucibus arcu quis ante. Curabitur at lacus ac velit ornare lobortis. ",
-//       imgUrl: "https://www.zengrafik.com/wp-content/uploads/2020/12/yeni-eczane-tabelasi-12.jpg",
-//     },
-//     {
-//       title: "Eczane Yalı",
-//       body: "Phasellus ullamcorper ipsum rutrum nunc. Nullam quis ante. Etiam ultricies nisi vel augue. Aenean tellus metus, bibendum sed, posuere ac, mattis non, nunc.",
-//       imgUrl: "https://artozalit.com/wp-content/uploads/2022/12/eczane-tabelasi.jpg",
-//     },
-//   ]
-
 const formatData = (data, numColumns) => {
     const numberOfFullRows = Math.floor(data?.length / numColumns);
 
@@ -45,11 +19,9 @@ const numColumns = 2;
 
 export default function PharmacyListScreen({ route, navigation }) {
     const data = route?.params?.pharmacyData;
-    const [prescriptionCode, setPrescriptionCode] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        console.log("data -> ", data)
+        console.log("pharmacy list params -> ", data)
     }, []);
 
     const renderSvgComponents = (x) => {

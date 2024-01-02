@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, TouchableWithoutFeedback, StyleSheet, Keyboard } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, TouchableWithoutFeedback, StyleSheet, Keyboard, Alert } from 'react-native';
 // import { useAuth } from './AuthContext';
 
 const callRegister = async (body) => {
@@ -64,37 +64,34 @@ export default function SignUpScreen({ navigation }) {
             setPasswordsMatch(false);
             return;
         }
-
-        try {
-            Keyboard.dismiss();
-            setIsLoading(true);
-            console.log("asda", JSON.stringify({
+        Keyboard.dismiss();
+        setIsLoading(true);
+        // console.log("asda", JSON.stringify({
+        //     userRole: 1,
+        //     name: name,
+        //     email: email,
+        //     password: password1,
+        // }))
+        callRegister(
+            JSON.stringify({
                 userRole: 1,
                 name: name,
                 email: email,
                 password: password1,
-            }))
-            callRegister(
-                JSON.stringify({
-                    userRole: 1,
-                    name: name,
-                    email: email,
-                    password: password1,
-                })).then(async prop => {
-                    const result = await prop.json()
-                    if(!result?.userEmail) {
-                        Alert.alert('Sign Up Failed', result)
-                        throw new Error('Sign up failed');
-                    }
-                    console.log("Signup res: ",result)
-                    navigation.navigate("Sign In", { signUpSuccess: 1 })
-                })
-            
-        } catch (error) {
-            Alert.alert('Error registering user:', error);
-        } finally {
-            setIsLoading(false);
-        }
+            })).then(async prop => {
+                const result = await prop.json()
+                if (!result?.userEmail) {
+                    throw new Error();
+                }
+                // console.log("Signup res: ",result)
+                navigation.navigate("Sign In", { signUpSuccess: 1 })
+            })
+            .catch(error => {
+                Alert.alert('Sign up failed', "Error registering user!");
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
     };
 
     return (

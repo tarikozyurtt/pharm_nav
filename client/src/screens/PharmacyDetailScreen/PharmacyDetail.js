@@ -37,7 +37,6 @@ const getDetail = async (body) => {
 export default function PharmacyDetailScreen({ route, navigation }) {
     const prop = route?.params;
     const { user, signOut } = useAuth();
-    const [isLoading, setIsLoading] = useState(false);
     const [name, setName] = useState('');
     const [uri] = useState(prop.uri);
     const [rating, setRating] = useState(0);
@@ -48,27 +47,23 @@ export default function PharmacyDetailScreen({ route, navigation }) {
         // console.log("detail -> ", prop)
         setDistance(Math.floor(prop.distance))
 
-        try {
-            getDetail(
-                JSON.stringify({
-                    pharmId: prop.pharmId
-                })).then(async res => {
-                    const result = await res.json()
-                    // if (!result?.userEmail) {
-                    //   Alert.alert('Sign Up Failed', result)
-                    //   throw new Error('Sign up failed');
-                    // }
-                    console.log("detail res: ", result)
-                    setName(result.pharmacyData.name)
-                    setTabviewprops({comments: result.pharmacyData.comments, description: result.pharmacyData.name, pharmId: prop.pharmId, userId: user.userId})
-                    setRating(Math.floor(result.pharmacyData.rating.totalRatings))
-                })
-
-        } catch (error) {
-            Alert.alert('Error registering user:', error);
-        } finally {
-            // setIsLoading(false);
-        }
+        getDetail(
+            JSON.stringify({
+                pharmId: prop.pharmId
+            })).then(async res => {
+                const result = await res.json()
+                // if (!result?.userEmail) {
+                //   Alert.alert('Sign Up Failed', result)
+                //   throw new Error('Sign up failed');
+                // }
+                console.log("detail res: ", result)
+                setName(result.pharmacyData.name)
+                setTabviewprops({ comments: result?.pharmacyData?.comments, description: result?.pharmacyData?.description, pharmId: prop?.pharmId, userId: user?.userId })
+                setRating(Math.floor(result.pharmacyData.rating.totalRatings))
+            })
+            .catch(error => {
+                Alert.alert('An Error Occured!', "Please try again.");
+            })
 
     }, []);
 
@@ -90,7 +85,7 @@ export default function PharmacyDetailScreen({ route, navigation }) {
 
                 <View style={styles.containerDetail}>
                     <View style={styles.leftAlign}>
-                        {renderSvgComponents(rating)} 
+                        {renderSvgComponents(rating)}
                         <Text style={{ fontSize: 12, fontWeight: "bold", marginLeft: 2 }}>{rating}</Text>
                     </View>
                 </View>
