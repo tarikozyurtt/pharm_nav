@@ -29,6 +29,7 @@ router.post("/pharmacy", async (req, res) => {
   await userSchema.findOneAndUpdate(
     {
       _id: codeData.patientId,
+      "pastPrescriptions.code": { $ne: code },
     },
     {
       $push: {
@@ -96,6 +97,7 @@ router.post("/pharmacyinfo", async (req, res) => {
   if (!pharmacyData) {
     return res.status(401).json({ message: "Pharmacy not found" });
   }
+  pharmacyData.comments = pharmacyData.comments.reverse();
   res.status(200).json({
     pharmacyData: pharmacyData ?? [],
   });
