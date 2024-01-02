@@ -15,9 +15,11 @@ const RegisterUser = async (body) => {
 function SignupPage({ setIsLoggedIn }) {
   const [userData, setUserData] = useState({
     name: '',
+    pharmacyName:'',
     email: '',
     password: '',
     location: '',
+    description:'',
     photos: [],
   });
   const navigate = useNavigate();
@@ -32,17 +34,37 @@ function SignupPage({ setIsLoggedIn }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const response = await RegisterUser(
-      JSON.stringify({
-        name: userData.name,
-        email: userData.email,
-        password: userData.password,
-        location: userData.location
+    const body = {
+      userRole:"2",
+      email:userData.email,
+      password:"pharm6",
+      name: userData.name,
+      pharmacyName:"examplename15",
+      location:{
+      type: "Point",
+      coordinates:[15,15]
+    }
+    }
+    try {
+      RegisterUser(
+        JSON.stringify({
+          name: userData.name,
+          email: userData.email,
+          password: userData.password,
+          location: userData.location
+        })
+      ).then( async prop =>{
+          if(prop.status == 200){
+            const result = await prop.json()
+            console.log("result:",result);
+          }
+          else{
+            throw new Error("Error occured")
+          }
       })
-    )
-
-    const result = await response.json();
+    } catch (error) {
+      console.log("error: ",error)
+    }
     
     // Registration logic here
     setIsLoggedIn(true);
@@ -77,10 +99,16 @@ function SignupPage({ setIsLoggedIn }) {
           <input type="text" name="name" placeholder="Name" onChange={handleInputChange} className="p-2 border border-gray-300 rounded w-full" />
         </div>
         <div className='mb-4'>
+          <input type="text" name="pharmacyName" placeholder="Pharmacy Name" onChange={handleInputChange} className="p-2 border border-gray-300 rounded w-full" />
+        </div>
+        <div className='mb-4'>
           <input type="email" name="email" placeholder="Email" onChange={handleInputChange} className="p-2 border border-gray-300 rounded w-full" />
         </div>
         <div className='mb-4'>
           <input type="password" name="password" placeholder="Password" onChange={handleInputChange} className="p-2 border border-gray-300 rounded w-full" />
+        </div>
+        <div className='mb-4'>
+          <input type="text" name="description" placeholder="Description" onChange={handleInputChange} className="p-2 border border-gray-300 rounded w-full" />
         </div>
         <div className='mb-4'>
           <input type="text" readOnly={true} name="location" placeholder="Current Location" value={userData.location} onChange={handleInputChange} className="p-2 border border-gray-300 rounded w-1/2 mr-5" />
