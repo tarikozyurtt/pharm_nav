@@ -21,7 +21,7 @@ const auth = async (req, res, next) => {
     console.log("decoded is")
     console.log(decoded)
     console.log("decoded user id")
-    console.log(decoded.userId)
+    console.log(decoded.user._id)
     // console.log(decoded);
     // Add the decoded user information to the request object
     const user = await User.findById(decoded.userId);
