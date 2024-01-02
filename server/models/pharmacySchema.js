@@ -17,9 +17,13 @@ const pharmacySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-
-    pharmImage: {
-      type: String,
+    isPremium: {
+      type: Boolean,
+      default: false,
+    },
+    pharmImages: {
+      type: Array,
+      default: [],
     },
     drugs: {
       type: Object,
@@ -61,7 +65,7 @@ const pharmacySchema = new mongoose.Schema(
       type: Object,
       default: {
         totalRatings: 0,
-        totalUsers: 0,
+        raters: [],
       },
     },
     comments: {

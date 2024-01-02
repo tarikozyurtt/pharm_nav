@@ -1,21 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, TouchableOpacity, Image, StyleSheet, Alert, ActivityIndicator, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { useAuth } from '../../AuthContext';
+import * as Location from 'expo-location';
 
-const searchPrescriptionCode = async (code) => {
-    // Simulating a service call, replace with actual service call
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            const data = { "aspirin": 2, "paracetamol": 1 }; // service call here
-            resolve(data);
-        }, 4000);
+const searchPrescriptionCode = async (body) => {
+    return await fetch('https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/pharmacy', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: body,
     });
 };
 
-export default function HomeScreen({ navigation }) {
+export default function HomeScreen({ route, navigation }) {
+    const prop = route.params || '';
     const { user, signOut } = useAuth();
-    const [prescriptionCode, setPrescriptionCode] = useState('');
+    const [prescriptionCode, setPrescriptionCode] = useState(prop.code);
     const [isLoading, setIsLoading] = useState(false);
+    const [location, setLocation] = useState(null);
+
+    useEffect(() => {
+        (async () => {
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert('Error', 'Permission to access location was denied.');
+                return;
+            }
+
+            Location.getCurrentPositionAsync({}).then(async prop => {
+                setLocation({
+                    latitude: prop.coords.latitude,
+                    longitude: prop.coords.longitude
+                });
+                console.log("current location: ", location)
+            })
+
+
+        })();
+    }, []);
 
     const handleSearch = async () => {
 
@@ -23,26 +46,32 @@ export default function HomeScreen({ navigation }) {
         if (prescriptionCode.length === 6) {
 
             // Convert to uppercase
-            const uppercaseCode = prescriptionCode.toUpperCase();
+            const code = prescriptionCode.toUpperCase();
 
-            try {
-                Keyboard.dismiss();
-                setIsLoading(true);
-
-                const result = await searchPrescriptionCode(uppercaseCode);
-                console.log('Search Result:', result);
-                // Handle the result as needed
-
-                if (result) {
-                    navigation.navigate("PharmacyList")
-                }
-            } catch (error) {
-                console.error('Error searching prescription code:', error);
-                // Notify the user about the error
-                Alert.alert('Error', 'An error occurred while searching. Please try again.');
+            Keyboard.dismiss();
+            setIsLoading(true);
+            if (location) {
+                searchPrescriptionCode(JSON.stringify({
+                    code: 'ABC',
+                    location: location,
+                })).then(async prop => {
+                    const result = await prop.json();
+                    console.log("Search Result: ", JSON.stringify(result))
+                    if(result.message){
+                        throw new Error();
+                    }
+                    navigation.navigate("PharmacyList", result)
+                })
+                    .catch(error => {
+                        Alert.alert('Searching Prescription Code Failed!', "An error occurred while searching. Please try again.");
+                    })
+                    .finally(() => {
+                        setIsLoading(false);
+                    });
             }
-            finally {
-                setIsLoading(false); // Stop loading, whether the call was successful or not
+            else {
+                Alert.alert('Alert', 'Please make sure you given the location access properly.');
+                setIsLoading(false);
             }
         } else {
             // Notify the user about the invalid code

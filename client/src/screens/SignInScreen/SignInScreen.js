@@ -4,10 +4,10 @@ import { useRoute } from '@react-navigation/native';
 import { useAuth } from '../../AuthContext';
 
 const authenticateUser = async (body) => {
-    return await fetch('https://splendorous-praline-960c1f.netlify.app/.netlify/functions/index/authenticate', {
+    return await fetch('https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/authenticate', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
         },
         body: body,
     });
@@ -47,35 +47,30 @@ export default function SignInScreen({ navigation }) {
         else {
             setMandatoryFull(true)
         }
-        try {
-            Keyboard.dismiss();
-            setIsLoading(true);
 
-
-            // const response = await simulateFunctionCall()
-            // const result = {"userInfo": {"userEmail": "bug@gmail.com", "userName": "tarik oz"}, "userToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjY1ODZjM2VjNTA5NWFkODc1MWQyYjJlZCIsIm5hbWUiOiJ0YXJpayBveiIsImVtYWlsIjoidGFyaWtAZ21haWwuY29tIiwicGFzc3dvcmQiOiIkMmIkMTAkbk5taFprU2xRdHNZa3A1L3B1em0zdXZUbG84OGRpTW1ZY0t3RHhvaWY1U3VTT2pRNlc5Si4iLCJtZXNzYWdlcyI6W10sIl9fdiI6MH0sImlhdCI6MTcwMzQzOTY3MX0.E_f1B-E_JU7__Hs6EG1N9zZrGcgx0s8KJ9v4-YVdoR4"}
-            // console.log('Login successful:', result.userToken, result.userToken);
-
-            const response = await authenticateUser(
-                JSON.stringify({
-                    email: email,
-                    password: password,
-                }))
-            
-            if (!response.ok) {
-                throw new Error('Sign in failed');
-            }
-            const result = await response.json();
-
-            
-            signIn(result.userToken, result.userInfo);
-            navigation.replace("Dashboard")
-        } catch (error) {
-            Alert.alert('Sign In Failed', 'Invalid email or password. Please try again.');
-        } finally {
-            setIsLoading(false);
-            setPassword('')
-        }
+        Keyboard.dismiss();
+        setIsLoading(true);
+        authenticateUser(
+            JSON.stringify({
+                email: email,
+                password: password,
+            }))
+            .then(async prop => {
+                const result = await prop.json();
+                console.log("Res: ", result.message)
+                if (!result?.userToken) {
+                    throw new Error();
+                }
+                signIn(result.userToken, result.userInfo);
+                navigation.replace("Dashboard", '')
+            })
+            .catch(error => {
+                Alert.alert('Sign In Failed', "Email or password is incorrect");
+            })
+            .finally(() => {
+                setIsLoading(false);
+                setPassword('');
+            });
     };
 
     useEffect(() => {

@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const connectDB = require("../helpers/dbMongoose");
 const router = express.Router();
 require("dotenv").config();
+
 router.post("/authenticate", async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
@@ -33,13 +34,13 @@ router.post("/authenticate", async (req, res) => {
   }
 
   // Generate a JWT token with the user ID as payload
-
+  
   const token = jwt.sign({ user }, process.env.JWT_SECRET);
 
   // Return the token as JSON
   res.status(200).json({
     userToken: token,
-    userInfo: { userName: user.name, userEmail: user.email },
+    userInfo: { userName: user.name, userEmail: user.email, userId: user._id },
   });
 });
 

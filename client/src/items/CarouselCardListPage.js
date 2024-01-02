@@ -1,12 +1,15 @@
-import React from 'react'
-import { View } from "react-native"
+import React, { useEffect } from 'react'
+import { View, TouchableOpacity } from "react-native"
 import Carousel, { Pagination } from 'react-native-snap-carousel'
-import data from './data'
 import CarouselCardItemListPage, { SLIDER_WIDTH, ITEM_WIDTH } from './CarouselCardItemListPage'
 
-const CarouselCardListPage = () => {
-    const [index, setIndex] = React.useState(0)
+const CarouselCardListPage = ({ data, navigation }) => {
+const [index, setIndex] = React.useState(0)
   const isCarousel = React.useRef(null)
+
+  const renderCarouselItem = ({ item, index }) => {
+    return <CarouselCardItemListPage item={item} index={index} navigation={navigation} />;
+  };
 
   return (
     <View>
@@ -15,7 +18,7 @@ const CarouselCardListPage = () => {
         layoutCardOffset={9}
         ref={isCarousel}
         data={data}
-        renderItem={CarouselCardItemListPage}
+        renderItem={renderCarouselItem}
         sliderWidth={SLIDER_WIDTH}
         itemWidth={ITEM_WIDTH}
         onSnapToItem={(index) => setIndex(index)}

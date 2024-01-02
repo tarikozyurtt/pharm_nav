@@ -3,16 +3,18 @@ import { View, Text, StyleSheet } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 
-export default function MapScreen() {
+export default function MapScreen({ route }) {
+    prop = route.params
+    const pharmLocation = {
+        latitude: prop.coordinates[0],
+        longitude: prop.coordinates[1]
+    }  
     const [location, setLocation] = useState(null);
-    const [location2, setLocation2] = useState({
-        latitude: 41.1328,
-        longitude: 29.0160
-    });
     const [mid, setMid] = useState(null);
 
     useEffect(() => {
         (async () => {
+            // console.log("pharm loc -> ", pharmLocation)
 
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
@@ -30,8 +32,8 @@ export default function MapScreen() {
             });
 
             setMid({
-                latitude: (loc.coords.latitude + location2.latitude) / 2,
-                longitude: (loc.coords.longitude + location2.longitude) / 2,
+                latitude: (loc.coords.latitude + pharmLocation.latitude) / 2,
+                longitude: (loc.coords.longitude + pharmLocation.longitude) / 2,
                 latitudeDelta: 0.1,
                 longitudeDelta: 0.1
             })
@@ -43,7 +45,7 @@ export default function MapScreen() {
             {location ? (
                 <MapView style={styles.map} region={mid}>
                     <Marker coordinate={location} title="You are here" />
-                    <Marker coordinate={location2} title="You are here" />
+                    <Marker coordinate={pharmLocation} title="Your target pharmacy"/>
                 </MapView>
             ) : (
                 <Text>Loading...</Text>

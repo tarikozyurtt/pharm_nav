@@ -1,4 +1,3 @@
-// feat: add AuthContext to handle login-logout
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
