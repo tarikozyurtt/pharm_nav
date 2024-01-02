@@ -33,11 +33,21 @@ const renderComment = (user_name, content, commentNumber) => (
   </View>
 );
 
+const handleShowInMap = (prop) => {
+  console.log('maps:', prop.location);
+  prop.navigation.navigate("Map", prop.location)
+};
+
 const FirstRoute = (props) => (
   <View style={styles.scene} >
     <Text style={styles.description}>
-      {props.prop}
+      {props?.prop?.description}
     </Text>
+    <TouchableOpacity onPress={() => handleShowInMap(props.prop)}>
+        <View style={styles.mapButton}>
+          <Text style={styles.addratingtext}>Show in map</Text>
+        </View>
+      </TouchableOpacity>
   </View>
 );
 
@@ -155,7 +165,7 @@ export default class TabViewExample extends React.Component {
         renderTabBar={renderTabBar}
         navigationState={this.state}
         renderScene={SceneMap({
-          first: () => <FirstRoute prop={prop.description} />,
+          first: () => <FirstRoute prop={prop} />,
           second: () => <SecondRoute prop={prop} />,
         })}
         onIndexChange={index => this.setState({ index })}
@@ -168,10 +178,11 @@ export default class TabViewExample extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
+    height: "100%",
   },
   scene: {
     width: "100%",
-    height: "100%",
+    height: "100%"
   },
   description: {
     textAlign: "center",
@@ -222,9 +233,17 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
   },
+  mapButton: {
+    position: 'absolute',
+    top: 270,
+    right: 30,
+    backgroundColor: '#FFFFFF', // or any other color you prefer
+    borderRadius: 10,
+    padding: 15,
+  },
   addratingtext: {
     color: '#6F70FF',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
   },
 });

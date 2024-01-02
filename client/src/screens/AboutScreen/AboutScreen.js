@@ -10,11 +10,9 @@ export default function AboutScreen() {
       />
       <Text style={styles.headerText}>About PharmNav</Text>
       <View style={styles.textView}>
-        <Text style={styles.text}>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the 
-        industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a 
-        type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially
-        unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more 
-        recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</Text>
+        <Text style={styles.text}>
+        PharmNav is a pioneering mobile application designed to revolutionize the process of accessing prescription medication from pharmacies. The core objective is to create a user-friendly application that efficiently connects customers with nearby pharmacies and provides real-time inventory management for pharmacy owners. PharmNav goes beyond basic functionalities by offering alternative pharmacy suggestions and generating comprehensive reports for drug producers.
+        </Text>
       </View>
       
       

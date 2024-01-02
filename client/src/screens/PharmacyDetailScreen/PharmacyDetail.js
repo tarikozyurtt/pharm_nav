@@ -58,7 +58,7 @@ export default function PharmacyDetailScreen({ route, navigation }) {
                 // }
                 console.log("detail res: ", result)
                 setName(result.pharmacyData.name)
-                setTabviewprops({ comments: result?.pharmacyData?.comments, description: result?.pharmacyData?.description, pharmId: prop?.pharmId, userId: user?.userId })
+                setTabviewprops({ comments: result?.pharmacyData?.comments, description: result?.pharmacyData?.description, pharmId: prop?.pharmId, userId: user?.userId, navigation: navigation, location: result?.pharmacyData?.location })
                 setRating(Math.floor(result.pharmacyData.rating.totalRatings))
             })
             .catch(error => {
