@@ -6,9 +6,11 @@ const connectDB = require("../helpers/dbMongoose");
 const codeSchema = require("../models/codeSchema");
 const pharmacySchema = require("../models/pharmacySchema");
 const { default: mongoose } = require("mongoose");
+const auth = require("../middleware/auth");
+
 const router = express.Router();
 require("dotenv").config();
-router.post("/pharmacy", async (req, res) => {
+router.post("/pharmacy", auth, async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
@@ -84,7 +86,7 @@ router.post("/pharmacy", async (req, res) => {
   });
 });
 
-router.post("/pharmacyinfo", async (req, res) => {
+router.post("/pharmacyinfo", auth, async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
@@ -103,7 +105,7 @@ router.post("/pharmacyinfo", async (req, res) => {
   });
 });
 
-router.post("/addcomment", async (req, res) => {
+router.post("/addcomment", auth, async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
@@ -145,7 +147,7 @@ router.post("/addcomment", async (req, res) => {
   });
 });
 
-router.post("/update", async (req, res) => {
+router.post("/update", auth, async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
@@ -196,7 +198,7 @@ router.post("/update", async (req, res) => {
   });
 });
 
-router.post("/addrating", async (req, res) => {
+router.post("/addrating", auth, async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
@@ -233,7 +235,7 @@ router.post("/addrating", async (req, res) => {
   });
 });
 
-router.get("/getPharmDetail", async (req, res) => {
+router.get("/getPharmDetail", auth, async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
