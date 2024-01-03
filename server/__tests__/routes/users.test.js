@@ -3,6 +3,7 @@
 const request = require('supertest');
 const express = require('express');
 const bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken'); // Import jwt library
 
 const registerPatientRoute = require('./../../routes/users'); 
 const connectDB = require('./../../helpers/dbMongoose');
@@ -19,7 +20,7 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
   it('should create a new user', async () => {
     const userData = {
       name: 'John Doe',
-      email: 'john.doe12@example.com',
+      email: 'test_email_patient@example.com',
       password: 'password123',
       userRole: 'patient',
     };
@@ -43,7 +44,7 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
   it('should handle duplicate email error', async () => {
     const userData = {
       name: 'John Doe',
-      email: 'john.doe11@example.com',
+      email: 'test_email_patient@example.com',
       password: 'password123',
       userRole: 'patient',
     };
@@ -63,7 +64,7 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
   it('should handle missing required fields in the request body', async () => {
     // Omit the 'name' field to simulate a missing required field
     const userData = {
-      email: 'john.doe3@example.com',
+      email: 'test_email_patient@example.com',
       password: 'password123',
       userRole: 'patient',
     };
@@ -87,11 +88,11 @@ app.use('/api', historyRoute);
 jest.mock('./../../helpers/dbMongoose'); // Mock the connectDB function
 
 describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/history', () => {
-  it('should return past prescriptions for a valid user', async () => {
+  it('should return past prescriptions for a valid user with proper authentication', async () => {
     // Assuming you have a valid user in your database with past prescriptions
     const existingUser = new User({
       name: 'John Doe',
-      email: 'john.doe9@example.com',
+      email: 'test_email@hotmail.com',
       password: 'password123',
       userRole: 'patient',
       pastPrescriptions: [],
@@ -103,8 +104,12 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
       userId: existingUser._id, // Use the _id of the existing user
     };
 
+    // Create a valid JWT token for authentication
+    const token = jwt.sign({ userId: existingUser._id }, 'your_secret_key');
+
     const response = await request('https://astonishing-capybara-516671.netlify.app')
       .post('/.netlify/functions/index/history')
+      .set('Authorization', `Bearer ${token}`) // Set the Authorization header with the token
       .send(userData);
 
     expect(response.status).toBe(200);
@@ -127,7 +132,7 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
   it('should register a new pharmacist and pharmacy', async () => {
     const userData = {
       userRole: '2',
-      email: 'test_omer4@hotmail.com',
+      email: 'test_email_pharmacist@hotmail.com',
       password: 'test_omer2',
       name: 'test_omer2',
       pharmacyName: 'test_omer2',

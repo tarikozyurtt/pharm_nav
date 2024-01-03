@@ -8,7 +8,7 @@ const pharmacySchema = require("../models/pharmacySchema");
 const router = express.Router();
 require("dotenv").config();
 
-router.post("/pharmacy", async (req, res) => {
+router.post("/pharmacy", auth, async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
