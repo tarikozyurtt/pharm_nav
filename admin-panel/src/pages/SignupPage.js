@@ -71,14 +71,18 @@ function SignupPage({ setIsLoggedIn }) {
             try {
               await fetch('https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/image', {
                 method: 'POST',
+                headers: {
+                  'Authorization':"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjY1OTQ4OTgyM2UyMDM1OTkyMmIzYjkwYSIsImVtYWlsIjoiYSIsInBhc3RQcmVzY3JpcHRpb25zIjpbXSwidXNlclJvbGUiOiIxIiwibmFtZSI6IlF3ZXIiLCJwYXNzd29yZCI6IiQyYiQxMCRyY1BWY0RkTjNiVTNuRWxRaGs5am0uUjZlNFU1UVYvSEdkRnhQTFNDUGhVN0QzWFhIM3BFUyIsIl9fdiI6MH0sImlhdCI6MTcwNDIzNDQxMn0.BV2HssWK-6sg_z_f1-_b2Qxj-yBBX8dMctKpqGjAu9M"
+                },
                 body: formData,
               }).then( async (prop)=>{
                 if(prop.status == 200){
                   const result = await prop.json()
                   console.log("image success:",result)
+                  navigate('/');
                 }
                 else{
-                  console.log("Error occured")
+                  console.log("Error occured", prop.status)
                 }
               })
             } catch (error) {
