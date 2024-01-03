@@ -66,5 +66,19 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
     });
   });
 
+  it('should handle missing password in the request body', async () => {
+    const userData = {
+      email: 'omer@hotmail.com',
+    };
+
+    const response = await request(app)
+      .post('/.netlify/functions/index/authenticate')
+      .send(userData);
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      message: '"password" is required',
+    });
+  });
   
 });
