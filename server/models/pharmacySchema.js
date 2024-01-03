@@ -65,7 +65,7 @@ const pharmacySchema = new mongoose.Schema(
       type: Object,
       default: {
         totalRatings: 0,
-        totalUsers: 0,
+        raters: [],
       },
     },
     comments: {

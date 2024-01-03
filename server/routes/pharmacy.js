@@ -5,6 +5,9 @@ const bcrypt = require("bcrypt");
 const connectDB = require("../helpers/dbMongoose");
 const codeSchema = require("../models/codeSchema");
 const pharmacySchema = require("../models/pharmacySchema");
+const { default: mongoose } = require("mongoose");
+const auth = require("../middleware/auth");
+
 const router = express.Router();
 require("dotenv").config();
 
@@ -17,6 +20,9 @@ router.post("/pharmacy", auth, async (req, res) => {
 
   await connectDB();
   const { code, location } = req.body;
+  if (!location) {
+    return res.status(401).json({ message: "Location not found" });
+  }
   let codeData = await codeSchema.findOne({ code: code });
   if (!codeData) {
     return res.status(401).json({ message: "Code is incorrect" });
@@ -26,6 +32,7 @@ router.post("/pharmacy", auth, async (req, res) => {
   await userSchema.findOneAndUpdate(
     {
       _id: codeData.patientId,
+      "pastPrescriptions.code": { $ne: code },
     },
     {
       $push: {
@@ -80,7 +87,7 @@ router.post("/pharmacy", auth, async (req, res) => {
   });
 });
 
-router.post("/pharmacyinfo", async (req, res) => {
+router.post("/pharmacyinfo", auth, async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
@@ -93,12 +100,13 @@ router.post("/pharmacyinfo", async (req, res) => {
   if (!pharmacyData) {
     return res.status(401).json({ message: "Pharmacy not found" });
   }
+  pharmacyData.comments = pharmacyData.comments.reverse();
   res.status(200).json({
     pharmacyData: pharmacyData ?? [],
   });
 });
 
-router.post("/addcomment", async (req, res) => {
+router.post("/addcomment", auth, async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
@@ -107,20 +115,29 @@ router.post("/addcomment", async (req, res) => {
 
   await connectDB();
 
-  const { pharmId, comment } = req.body;
+  const { pharmId, comment, patientId } = req.body;
   /*
     {
       name:"user1"
       comment: "Very good pharmacy",
     }
   */
+  let patient = await userSchema.findById(patientId);
+  if (!patient) {
+    return res.status(401).json({ message: "Patient not found" });
+  }
+
   let pharmacyData = await pharmacySchema.findOneAndUpdate(
     { _id: pharmId },
     {
       $push: {
-        comments: comment,
+        comments: {
+          content: comment,
+          user_name: patient.name,
+        },
       },
-    }
+    },
+    { returnOriginal: false }
   );
   if (!pharmacyData) {
     return res.status(401).json({ message: "Pharmacy not found" });
@@ -131,7 +148,7 @@ router.post("/addcomment", async (req, res) => {
   });
 });
 
-router.post("/update", async (req, res) => {
+router.post("/update", auth, async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
@@ -182,7 +199,7 @@ router.post("/update", async (req, res) => {
   });
 });
 
-router.post("/addrating", async (req, res) => {
+router.post("/addrating", auth, async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
@@ -191,27 +208,35 @@ router.post("/addrating", async (req, res) => {
 
   await connectDB();
 
-  const { pharmId, rating } = req.body;
+  const { pharmId, rating, userId } = req.body;
 
   let pharmacyData = await pharmacySchema.findOneAndUpdate(
-    { _id: pharmId },
+    { _id: pharmId, "rating.raters": { $ne: userId } },
     {
       $inc: {
         "rating.totalRatings": rating,
-        "rating.totalUsers": 1,
       },
+      $push: {
+        "rating.raters": userId,
+      },
+    },
+    {
+      new: true,
     }
   );
   if (!pharmacyData) {
-    return res.status(401).json({ message: "Pharmacy not found" });
+    return res.status(401).json({ message: "Error on user or pharmacy" });
   }
+  pharmacyData.rating.totalRatings = (
+    pharmacyData.rating.totalRatings / pharmacyData.rating.raters.length
+  ).toFixed(2);
 
   res.status(200).json({
     pharmacyData: pharmacyData ?? [],
   });
 });
 
-router.get("/getPharmDetail", async (req, res) => {
+router.get("/getPharmDetail", auth, async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",

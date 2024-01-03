@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, TouchableWithoutFeedback, StyleSheet, Keyboard } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, TouchableWithoutFeedback, StyleSheet, Keyboard, Alert } from 'react-native';
 // import { useAuth } from './AuthContext';
 
 const callRegister = async (body) => {
-    return await fetch('https://splendorous-praline-960c1f.netlify.app/.netlify/functions/index/register', {
+    return await fetch('https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/registerPatient', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -64,30 +64,34 @@ export default function SignUpScreen({ navigation }) {
             setPasswordsMatch(false);
             return;
         }
-
-        try {
-            Keyboard.dismiss();
-            setIsLoading(true);
-            const response = await simulateFunctionCall(
-                JSON.stringify({
-                    name: name,
-                    email: email,
-                    password: password1,
-                }))
-
-            // if (!response.ok) {
-            //     throw new Error('Registration failed');
-            // }
-
-            // // Registration successful, handle the response if needed
-            // const result = await response.json();
-            // console.log('Registration successful:', result);
-            navigation.navigate("Sign In", { signUpSuccess: 1 })
-        } catch (error) {
-            Alert.alert('Error registering user:', error);
-        } finally {
-            setIsLoading(false);
-        }
+        Keyboard.dismiss();
+        setIsLoading(true);
+        // console.log("asda", JSON.stringify({
+        //     userRole: 1,
+        //     name: name,
+        //     email: email,
+        //     password: password1,
+        // }))
+        callRegister(
+            JSON.stringify({
+                userRole: 1,
+                name: name,
+                email: email,
+                password: password1,
+            })).then(async prop => {
+                const result = await prop.json()
+                if (!result?.userEmail) {
+                    throw new Error();
+                }
+                // console.log("Signup res: ",result)
+                navigation.navigate("Sign In", { signUpSuccess: 1 })
+            })
+            .catch(error => {
+                Alert.alert('Sign up failed', "Error registering user!");
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
     };
 
     return (
