@@ -1,26 +1,10 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Dimensions, StatusBar, Text, ScrollView, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import StarRating from 'react-native-star-rating-widget';
+import { useAuth } from '../AuthContext';
+import { checkIsValid } from "badword-filter";
 
-const addRating = async (body) => {
-  return await fetch('https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/addrating', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: body,
-  });
-};
-
-const addComment = async (body) => {
-  return await fetch('https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/addcomment', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: body,
-  });
-};
 
 const renderComment = (user_name, content, commentNumber) => (
   <View style={styles.commentView} key={commentNumber}>
@@ -44,10 +28,10 @@ const FirstRoute = (props) => (
       {props?.prop?.description}
     </Text>
     <TouchableOpacity onPress={() => handleShowInMap(props.prop)}>
-        <View style={styles.mapButton}>
-          <Text style={styles.addratingtext}>Show in map</Text>
-        </View>
-      </TouchableOpacity>
+      <View style={styles.mapButton}>
+        <Text style={styles.addratingtext}>Show in map</Text>
+      </View>
+    </TouchableOpacity>
   </View>
 );
 
@@ -55,46 +39,97 @@ const SecondRoute = (props) => {
   const [commentInput, setCommentInput] = useState('');
   const [comms, setComms] = useState(props?.prop?.comments)
   const [isLoading, setIsLoading] = useState(false);
+  const [rating, setRating] = useState(3);
+  const [ratingVisible, setRatingVisible] = useState(false);
+  const { user, signOut } = useAuth();
 
-  const handleAddRatingPress = () => {
+
+
+  const addRating = async (body) => {
+    return await fetch('https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/addrating', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': "Bearer " + user.token
+      },
+      body: body,
+    });
+  };
+
+  const addComment = async (body) => {
+    return await fetch('https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/addcomment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': "Bearer " + user.token
+      },
+      body: body,
+    });
+  };
+
+  const handleSetRating = (rate) => {
+    setRating(rate);
+    console.log("rating -> ", props.prop)
+
+    if (ratingVisible) {
+      setIsLoading(true);
+      console.log("body")
+      console.log({ pharmId: props.prop.pharmId, rating: rate, userId: props.prop.userId })
+
+      addRating(JSON.stringify({ pharmId: props.prop.pharmId, rating: rate, userId: props.prop.userId }))
+        .then(async prop => {
+          const result = await prop.json()
+          console.log("add reating res: ", result)
+          props.handleClick()
+          Alert.alert("Successfull!", "Your rating have been posted.")
+        })
+        .catch(error => {
+          console.log("errorrr: ", error)
+          Alert.alert('An Error Occured!', "Please try again.");
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
+    setRatingVisible(!ratingVisible)
     // open popup give rating call service
-    console.log("rating -> ", props.prop.pharmId)
-    // setIsLoading(true);
-    // addComment(JSON.stringify({ pharmId: props.prop.pharmId, comment: commentInput, patientId: props.prop.userId }))
-    //   .then(async prop => {
-    //     const result = await prop.json()
-    //     console.log("add comment res: ", result)
-    //     setComms(result?.pharmacyData)
-    //     Alert.alert("Successfull!", "Your comment have been posted.")
-    //   })
-    //   .catch(error => {
-    //     Alert.alert('An Error Occured!', "Please try again.");
-    //   })
-    //   .finally(() => {
-    //     setCommentInput('');
-    //     setIsLoading(false);
-    // });
 
   };
 
   const handleSendButtonPress = () => {
-    console.log('Comment Input:', commentInput);
-    setIsLoading(true);
 
-    addComment(JSON.stringify({ pharmId: props.prop.pharmId, comment: commentInput, patientId: props.prop.userId }))
-      .then(async prop => {
-        const result = await prop.json()
-        console.log("add comment res: ", result)
-        setComms(result?.pharmacyData)
-        Alert.alert("Successfull!", "Your comment have been posted.")
-      })
-      .catch(error => {
-        Alert.alert('An Error Occured!', "Please try again.");
-      })
-      .finally(() => {
-        setCommentInput('');
-        setIsLoading(false);
-    });
+
+
+    let checker = checkIsValid(commentInput, {
+      swear: true,
+      negative: true,
+      political: true,
+      religion: true,
+    })
+    console.log('Comment Input:', commentInput, " checker: ", checker);
+
+    if (checker) {
+      setIsLoading(true);
+      console.log(props.prop)
+      addComment(JSON.stringify({ pharmId: props.prop.pharmId, comment: commentInput, patientId: props.prop.userId }))
+        .then(async prop => {
+          const result = await prop.json()
+          console.log("add comment res: ", result)
+          setComms(result?.pharmacyData)
+          Alert.alert("Successfull!", "Your comment have been posted.")
+        })
+        .catch(error => {
+          Alert.alert('An Error Occured!', "Please try again.", error);
+        })
+        .finally(() => {
+          setCommentInput('');
+          setIsLoading(false);
+        });
+    }
+    else {
+      Alert.alert("This comment is not suitable: ", commentInput)
+    }
+
   };
 
   return (
@@ -111,29 +146,40 @@ const SecondRoute = (props) => {
               />
             </View>
             {!isLoading ? (
-            <View style={{ flex: 1, borderRadius: 7, backgroundColor: '#6F70FF' }}>
-              <TouchableOpacity style={styles.commentButton} onPress={handleSendButtonPress}>
-                <Text style={{ textAlign: 'center', color: '#fff', fontSize: 16 }}>Send</Text>
-              </TouchableOpacity>
-            </View>
+              <View style={{ flex: 1, borderRadius: 7, backgroundColor: '#6F70FF' }}>
+                <TouchableOpacity style={styles.commentButton} onPress={handleSendButtonPress}>
+                  <Text style={{ textAlign: 'center', color: '#fff', fontSize: 16 }}>Send</Text>
+                </TouchableOpacity>
+              </View>
             ) : (
               <View style={{ flex: 1, borderRadius: 7, backgroundColor: '#6F70FF' }}>
                 <TouchableOpacity style={styles.commentButton}>
                   <Text style={{ textAlign: 'center', color: '#fff', fontSize: 16 }}>Sending..</Text>
                 </TouchableOpacity>
               </View>
-              )}
+            )}
           </View>
 
           {comms?.map((comment, index) => renderComment(comment.user_name, comment.content, index))}
         </View>
       </ScrollView>
 
-      <TouchableOpacity onPress={handleAddRatingPress}>
-        <View style={styles.butonCont}>
-          <Text style={styles.addratingtext}>Add Rating</Text>
-        </View>
-      </TouchableOpacity>
+      {
+        ratingVisible && (
+          <View style={{ marginBottom: 30, marginLeft: 30 }}>
+
+            <StarRating
+              rating={rating}
+              onChange={handleSetRating}
+              color="#FFA500"
+              starSize="32"
+            />
+          </View>
+
+        )}
+      {!props.prop.rating?.raters?.includes(props.prop.userId) && <TouchableOpacity style={styles.butonCont} onPress={() => {setRatingVisible(!ratingVisible)}}>
+        <Text style={styles.addratingtext}>{!ratingVisible ? "Add Rating" : "Close"}</Text>
+      </TouchableOpacity>}
     </View>
   );
 };
@@ -146,7 +192,8 @@ const renderTabBar = props => (
   />
 );
 
-export default class TabViewExample extends React.Component {
+const TabViewExample = ({ prop, handleClick }) => {
+
   state = {
     index: 0,
     routes: [
@@ -155,26 +202,24 @@ export default class TabViewExample extends React.Component {
     ],
   };
 
-  render() {
-    const { prop } = this.props;
 
-    // console.log('Prop value:', prop);
-
-    return (
-      <TabView
-        renderTabBar={renderTabBar}
-        navigationState={this.state}
-        renderScene={SceneMap({
-          first: () => <FirstRoute prop={prop} />,
-          second: () => <SecondRoute prop={prop} />,
-        })}
-        onIndexChange={index => this.setState({ index })}
-        initialLayout={{ width: Dimensions.get('window').width }}
-        style={styles.container}
-      />
-    );
-  }
+  // console.log('Prop value:', prop);
+  return (
+    <TabView
+      renderTabBar={renderTabBar}
+      navigationState={this.state}
+      renderScene={SceneMap({
+        first: () => <FirstRoute prop={prop} />,
+        second: () => <SecondRoute prop={prop} handleClick={handleClick} />,
+      })}
+      onIndexChange={index => state.index = index}
+      initialLayout={{ width: Dimensions.get('window').width }}
+      style={styles.container}
+    />
+  );
 }
+
+export default TabViewExample
 
 const styles = StyleSheet.create({
   container: {
@@ -233,10 +278,15 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
   },
-  mapButton: {
+  butonCloseRating: {
     position: 'absolute',
-    top: 270,
-    right: 30,
+    bottom: 32,
+    left: 15,
+    backgroundColor: '#FFFFFF', // or any other color you prefer
+    borderRadius: 5,
+    padding: 10,
+  },
+  mapButton: {
     backgroundColor: '#FFFFFF', // or any other color you prefer
     borderRadius: 10,
     padding: 15,

@@ -2,15 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { useAuth } from '../../AuthContext';
 
-const getHistory = async (body) => {
-  return await fetch('https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/history', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: body,
-  });
-};
 
 const PharmacyItem = ({ code, drugs, navigation }) => {
   return (
@@ -36,6 +27,17 @@ export default function ProfileScreen({ navigation }) {
   const [history, setHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const getHistory = async (body) => {
+    return await fetch('https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/history', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization':"Bearer " + user.token
+      },
+      body: body,
+    });
+  };
+
   useEffect(() => {
     // console.log(user.userId)
     getHistory(
@@ -47,6 +49,7 @@ export default function ProfileScreen({ navigation }) {
         setHistory(result.pastPrescriptions)
       })
       .catch(error => {
+        console.log(error)
         Alert.alert('Failed fetching history!', "Please try again.");
       })
       .finally(() => {

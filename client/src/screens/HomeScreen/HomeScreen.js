@@ -3,25 +3,31 @@ import { View, Text, TextInput, Button, TouchableOpacity, Image, StyleSheet, Ale
 import { useAuth } from '../../AuthContext';
 import * as Location from 'expo-location';
 
-const searchPrescriptionCode = async (body) => {
-    return await fetch('https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/pharmacy', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: body,
-    });
-};
-
 export default function HomeScreen({ route, navigation }) {
     const prop = route.params || '';
     const { user, signOut } = useAuth();
     const [prescriptionCode, setPrescriptionCode] = useState(prop.code);
     const [isLoading, setIsLoading] = useState(false);
     const [location, setLocation] = useState(null);
+    const [codeInputEnable,setCodeInputEnable] = useState(false)
+
+    const searchPrescriptionCode = async (body) => {
+        return await fetch('https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/pharmacy', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization':"Bearer " + user.token
+            },
+            body: body,
+        });
+    };
+
 
     useEffect(() => {
+
         (async () => {
+            console.log("looooooooo",user)
+            setCodeInputEnable(false)
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
                 Alert.alert('Error', 'Permission to access location was denied.');
@@ -33,15 +39,17 @@ export default function HomeScreen({ route, navigation }) {
                     latitude: prop.coords.latitude,
                     longitude: prop.coords.longitude
                 });
-                console.log("current location: ", location)
+                setCodeInputEnable(true)
+                console.log("current location: ", prop.coords.latitude)
             })
 
 
         })();
     }, []);
+    
 
     const handleSearch = async () => {
-
+        console.log("--------kod-------",prescriptionCode);
         // Validate if the entered code is exactly 6 characters
         if (prescriptionCode.length === 6) {
 
@@ -52,11 +60,12 @@ export default function HomeScreen({ route, navigation }) {
             setIsLoading(true);
             if (location) {
                 searchPrescriptionCode(JSON.stringify({
-                    code: 'ABC',
+                    code: code,
                     location: location,
+                    userId: user.userId
                 })).then(async prop => {
                     const result = await prop.json();
-                    console.log("Search Result: ", JSON.stringify(result))
+                    console.log("Search Result: ", JSON.stringify(result), user.token)
                     if(result.message){
                         throw new Error();
                     }
@@ -90,6 +99,7 @@ export default function HomeScreen({ route, navigation }) {
                 {!isLoading && (
                     <View style={styles.bottomContainer}>
                         <TextInput
+                            editable={codeInputEnable}
                             style={styles.input}
                             placeholder="Enter Prescription Code"
                             onChangeText={(text) => setPrescriptionCode(text)}
@@ -99,12 +109,21 @@ export default function HomeScreen({ route, navigation }) {
                             placeholderTextColor="#AFB1B6"
                         />
                         <TouchableOpacity
+                            disabled={!codeInputEnable}
                             style={styles.findButton}
                             onPress={handleSearch}
                         >
-                            <Text style={styles.buttonText}>
-                                Find Pharmacies
-                            </Text>
+                            {
+                                codeInputEnable ? 
+                                (<Text style={styles.buttonText}>
+                                    Find Pharmacies
+                                </Text>)
+                                :
+                                (<Text style={styles.buttonText}>
+                                    Wait Location
+                                </Text>)
+                            }
+                            
                         </TouchableOpacity>
                     </View>
                 )}

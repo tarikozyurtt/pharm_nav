@@ -1,7 +1,9 @@
 import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, Alert, Keyboard, ActivityIndicator } from 'react-native';
 import React, { useState } from 'react';
+import { useAuth } from '../../AuthContext';
 
 export default function SupportScreen() {
+  const { user } = useAuth();
   const [email, setEmail] = useState('');
   const [problem, setProblem] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -11,6 +13,7 @@ export default function SupportScreen() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization':"Bearer " + user.token
       },
       body: body,
     });
