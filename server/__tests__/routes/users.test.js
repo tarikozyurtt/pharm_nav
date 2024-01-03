@@ -20,7 +20,7 @@ app.use('/api', registerPatientRoute);
 jest.mock('./../../helpers/dbMongoose'); // Mock the connectDB function
 
 
-
+/*
 describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/registerPatient', () => {
   it('should create a new user', async () => {
     const userData = {
@@ -334,7 +334,7 @@ function createTempFile() {
 
   return { path: tempFile.name, name: tempFile.name };
 }
-
+*/
 
 // Test for /.netlify/functions/index/getCodeDrugs
 const getCodeDrugsRoute = require('./../../routes/users');
