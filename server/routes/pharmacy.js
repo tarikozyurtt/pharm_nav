@@ -10,6 +10,7 @@ const auth = require("../middleware/auth");
 
 const router = express.Router();
 require("dotenv").config();
+
 router.post("/pharmacy", auth, async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
