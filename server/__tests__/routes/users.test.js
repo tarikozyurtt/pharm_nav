@@ -307,7 +307,7 @@ function createTempFile() {
 
   return { path: tempFile.name, name: tempFile.name };
 }
-*/
+
 
 // Test for /.netlify/functions/index/getCodeDrugs
 const getCodeDrugsRoute = require('./../../routes/users');
@@ -348,3 +348,5 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
   });
   
 });
+
+*/
