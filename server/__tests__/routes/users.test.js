@@ -9,6 +9,7 @@ const registerPatientRoute = require('./../../routes/users');
 const connectDB = require('./../../helpers/dbMongoose');
 const User = require('./../../models/users'); 
 const Pharmacy = require('./../../models/pharmacySchema'); 
+const ticketSchema = require('./../../models/supportSchema'); 
 
 const app = express();
 app.use(bodyParser.json());
@@ -174,3 +175,40 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
   // Add more test cases as needed
 });
 
+
+// Test for /.netlify/functions/index/sendticket
+const sendTicketRoute = require('./../../routes/yourRoutes'); // Replace 'yourRoutes' with the actual path to your routes file
+
+app.use('/api', sendTicketRoute);
+
+describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/sendticket', () => {
+  it('should send a new ticket', async () => {
+    const ticketData = {
+      email: 'test_email@example.com',
+      pharmacyName: 'Test Pharmacy',
+      pharmacistName: 'Test Pharmacist',
+      description: 'Test description for the ticket',
+    };
+
+    const saveTicketMock = jest.spyOn(ticketSchema.prototype, 'save').mockResolvedValueOnce();
+
+    // Assuming you have a valid authentication token
+    const token = 'your_valid_token';
+
+    const response = await request('https://astonishing-capybara-516671.netlify.app')
+      .post('/.netlify/functions/index/sendticket')
+      .set('Authorization', `Bearer ${token}`)
+      .send(ticketData);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      email: ticketData.email,
+      pharmacyName: ticketData.pharmacyName,
+      pharmacistName: ticketData.pharmacistName,
+      description: ticketData.description,
+    });
+    expect(saveTicketMock).toHaveBeenCalled();
+  });
+
+  // Add more test cases as needed
+});
