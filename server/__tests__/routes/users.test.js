@@ -332,5 +332,19 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
       drugs: expect.any(Object),
     });
   });
+
+  it('should handle prescription not found', async () => {
+    // Assuming you have an invalid prescription code in your database
+    const invalidCode = 'invalid_code';
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjY1OTQ3MWI5ZjA2MmMwYjJiY2JiZjNlZCIsImVtYWlsIjoib21lckBob3RtYWlsLmNvbSIsInBhc3RQcmVzY3JpcHRpb25zIjpbXSwidXNlclJvbGUiOiIxIiwibmFtZSI6Im9tZXIiLCJwYXNzd29yZCI6IiQyYiQxMCRkdjMxdm4vRHhWLjdmbHJ2QnZneVF1LlVnMHFCZ2lORUd1NE82R3NOcXNFdExBOW8veWVBUyIsIl9fdiI6MH0sImlhdCI6MTcwNDI0NDQ4MX0.3mQttReZ1r6oQlVHjI75gIKYfUpFkfEi_6S37LPC6go';
+
+    const response = await request('https://astonishing-capybara-516671.netlify.app')
+      .post('/.netlify/functions/index/getCodeDrugs')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ code: invalidCode });
+
+    expect(response.status).toBe(400);
+    expect(response.text).toBe('Prescription not found');
+  });
   
 });
