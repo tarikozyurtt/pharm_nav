@@ -210,5 +210,27 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
     expect(saveTicketMock).toHaveBeenCalled();
   });
 
-  // Add more test cases as needed
+  it('should handle duplicate ticket error', async () => {
+    const ticketData = {
+      email: 'test_email@example.com',
+      pharmacyName: 'Test Pharmacy',
+      pharmacistName: 'Test Pharmacist',
+      description: 'Test description for the ticket',
+    };
+
+    jest.spyOn(ticketSchema.prototype, 'save').mockRejectedValueOnce({
+      code: 11000, // Simulate MongoDB duplicate key error
+    });
+
+    // Assuming you have a valid authentication token
+    const token = 'your_valid_token';
+
+    const response = await request('https://astonishing-capybara-516671.netlify.app')
+      .post('/.netlify/functions/index/sendticket')
+      .set('Authorization', `Bearer ${token}`)
+      .send(ticketData);
+
+    expect(response.status).toBe(400);
+    expect(response.text).toBe('Ticket already exists');
+  });
 });
