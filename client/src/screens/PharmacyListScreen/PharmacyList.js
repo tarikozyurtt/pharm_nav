@@ -3,6 +3,8 @@ import { View, Text, FlatList, Dimensions, TouchableOpacity, Image, StyleSheet }
 import CarouselCards from '../../items/CarouselCardListPage';
 import SvgComponentYellow from '../../items/star_yellow';
 import SvgComponentBlack from '../../items/star_black';
+import StarRating from 'react-native-star-rating-widget';
+
 
 const formatData = (data, numColumns) => {
     const numberOfFullRows = Math.floor(data?.length / numColumns);
@@ -42,6 +44,7 @@ export default function PharmacyListScreen({ route, navigation }) {
         if (item.empty === true) {
             return <View style={[styles.item, styles.itemInvisible]} />;
         }
+        console.log("look rating: ", item.rating)
         return (
             <TouchableOpacity style={styles.item} onPress={() => {
                 // console.log("asdasd")
@@ -54,7 +57,12 @@ export default function PharmacyListScreen({ route, navigation }) {
                 <Text style={styles.itemName}>{item.name}</Text>
                 <Text style={styles.itemDistance}>{Math.floor(item.distance)} m</Text>
                 <View style={styles.rating}>
-                    {renderSvgComponents(Math.floor(item?.rating?.totalRatings / item?.rating?.totalUsers))}
+                <StarRating
+                    rating={item?.rating?.totalRatings / item?.rating?.raters.length}
+                    onChange={()=>{}}
+                    color="#FFA500"
+                    starSize="17"
+                />
                 </View>
             </TouchableOpacity>
         );
