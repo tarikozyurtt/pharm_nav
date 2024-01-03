@@ -107,7 +107,7 @@ router.post("/pharmacyinfo", auth, async (req, res) => {
     const { pharmId } = req.body;
     let pharmacyData = await pharmacySchema.findById(pharmId);
     if (!pharmacyData) {
-      return res.status(401).json({ message: "Pharmacy not found" });
+      return res.status(500).json({ message: "Pharmacy not found" });
     }
     pharmacyData.comments = pharmacyData.comments.reverse();
     res.status(200).json({
@@ -115,7 +115,7 @@ router.post("/pharmacyinfo", auth, async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Pharmacy not found" });
   }
 });
 
