@@ -15,11 +15,8 @@ const auth = async (req, res, next) => {
   }
 
   try {
-    // Verify the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     await connectDB();
-    // console.log(decoded);
-    // Add the decoded user information to the request object
     const user = await User.findById(decoded.user._id);
     if (!user) {
       return res.status(400).json({ message: "User does not exist" });
