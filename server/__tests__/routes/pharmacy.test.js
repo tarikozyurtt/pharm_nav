@@ -131,4 +131,23 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
     });
   });
 
+  it('should return an error for an invalid pharmId with proper authentication', async () => {
+    // Assuming you have an invalid pharmId that does not exist in your database
+    const invalidPharmId = 'invalid_pharmId';
+
+    // Mock the findById method to return null (pharmacy not found)
+    jest.spyOn(pharmacySchema, 'findById').mockResolvedValueOnce(null);
+
+    // Create a valid JWT token for authentication
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjY1OTQ3MWI5ZjA2MmMwYjJiY2JiZjNlZCIsImVtYWlsIjoib21lckBob3RtYWlsLmNvbSIsInBhc3RQcmVzY3JpcHRpb25zIjpbXSwidXNlclJvbGUiOiIxIiwibmFtZSI6Im9tZXIiLCJwYXNzd29yZCI6IiQyYiQxMCRkdjMxdm4vRHhWLjdmbHJ2QnZneVF1LlVnMHFCZ2lORUd1NE82R3NOcXNFdExBOW8veWVBUyIsIl9fdiI6MH0sImlhdCI6MTcwNDI0NDQ4MX0.3mQttReZ1r6oQlVHjI75gIKYfUpFkfEi_6S37LPC6go';
+
+    const response = await request('https://astonishing-capybara-516671.netlify.app')
+      .post('/.netlify/functions/index/pharmacyinfo')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ pharmId: invalidPharmId });
+
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ message: 'Pharmacy not found' });
+  });
+
 });
