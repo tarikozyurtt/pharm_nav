@@ -28,10 +28,10 @@ const FirstRoute = (props) => (
       {props?.prop?.description}
     </Text>
     <TouchableOpacity onPress={() => handleShowInMap(props.prop)}>
-        <View style={styles.mapButton}>
-          <Text style={styles.addratingtext}>Show in map</Text>
-        </View>
-      </TouchableOpacity>
+      <View style={styles.mapButton}>
+        <Text style={styles.addratingtext}>Show in map</Text>
+      </View>
+    </TouchableOpacity>
   </View>
 );
 
@@ -50,34 +50,33 @@ const SecondRoute = (props) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization':"Bearer " + user.token
+        'Authorization': "Bearer " + user.token
       },
       body: body,
     });
   };
-  
-  const addComment = async (body) => {    
+
+  const addComment = async (body) => {
     return await fetch('https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/addcomment', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization':"Bearer " + user.token
+        'Authorization': "Bearer " + user.token
       },
       body: body,
     });
   };
 
-
-
-  const handleAddRatingPress = () => {
+  const handleSetRating = (rate) => {
+    setRating(rate);
     console.log("rating -> ", props.prop)
 
-    if(ratingVisible){
+    if (ratingVisible) {
       setIsLoading(true);
       console.log("body")
-      console.log({ pharmId: props.prop.pharmId, rating: rating, userId: props.prop.userId })
-      
-      addRating(JSON.stringify({ pharmId: props.prop.pharmId, rating: rating, userId: props.prop.userId }))
+      console.log({ pharmId: props.prop.pharmId, rating: rate, userId: props.prop.userId })
+
+      addRating(JSON.stringify({ pharmId: props.prop.pharmId, rating: rate, userId: props.prop.userId }))
         .then(async prop => {
           const result = await prop.json()
           console.log("add reating res: ", result)
@@ -85,22 +84,21 @@ const SecondRoute = (props) => {
           Alert.alert("Successfull!", "Your rating have been posted.")
         })
         .catch(error => {
-          console.log("errorrr: ",error)
+          console.log("errorrr: ", error)
           Alert.alert('An Error Occured!', "Please try again.");
         })
         .finally(() => {
           setIsLoading(false);
-      });
+        });
     }
     setRatingVisible(!ratingVisible)
     // open popup give rating call service
 
   };
-  
 
   const handleSendButtonPress = () => {
-    
-    
+
+
 
     let checker = checkIsValid(commentInput, {
       swear: true,
@@ -108,9 +106,9 @@ const SecondRoute = (props) => {
       political: true,
       religion: true,
     })
-    console.log('Comment Input:', commentInput, " checker: ",checker);
+    console.log('Comment Input:', commentInput, " checker: ", checker);
 
-    if(checker){
+    if (checker) {
       setIsLoading(true);
       console.log(props.prop)
       addComment(JSON.stringify({ pharmId: props.prop.pharmId, comment: commentInput, patientId: props.prop.userId }))
@@ -126,10 +124,10 @@ const SecondRoute = (props) => {
         .finally(() => {
           setCommentInput('');
           setIsLoading(false);
-      });
+        });
     }
-    else{
-      Alert.alert("This comment is not suitable: ",commentInput)
+    else {
+      Alert.alert("This comment is not suitable: ", commentInput)
     }
 
   };
@@ -148,18 +146,18 @@ const SecondRoute = (props) => {
               />
             </View>
             {!isLoading ? (
-            <View style={{ flex: 1, borderRadius: 7, backgroundColor: '#6F70FF' }}>
-              <TouchableOpacity style={styles.commentButton} onPress={handleSendButtonPress}>
-                <Text style={{ textAlign: 'center', color: '#fff', fontSize: 16 }}>Send</Text>
-              </TouchableOpacity>
-            </View>
+              <View style={{ flex: 1, borderRadius: 7, backgroundColor: '#6F70FF' }}>
+                <TouchableOpacity style={styles.commentButton} onPress={handleSendButtonPress}>
+                  <Text style={{ textAlign: 'center', color: '#fff', fontSize: 16 }}>Send</Text>
+                </TouchableOpacity>
+              </View>
             ) : (
               <View style={{ flex: 1, borderRadius: 7, backgroundColor: '#6F70FF' }}>
                 <TouchableOpacity style={styles.commentButton}>
                   <Text style={{ textAlign: 'center', color: '#fff', fontSize: 16 }}>Sending..</Text>
                 </TouchableOpacity>
               </View>
-              )}
+            )}
           </View>
 
           {comms?.map((comment, index) => renderComment(comment.user_name, comment.content, index))}
@@ -167,26 +165,21 @@ const SecondRoute = (props) => {
       </ScrollView>
 
       {
-ratingVisible&&
-<View style={{marginBottom:30}}>
-      <TouchableOpacity style={styles.butonCloseRating} onPress={()=>setRatingVisible(false)}>
-          <Text style={styles.addratingtext}>Close</Text>
-      </TouchableOpacity>
+        ratingVisible && (
+          <View style={{ marginBottom: 30, marginLeft: 30 }}>
 
-        <StarRating
-        rating={rating}
-        onChange={setRating}
-        
-        color="#FFA500"
-        starSize="32"
-      />
-</View>
+            <StarRating
+              rating={rating}
+              onChange={handleSetRating}
+              color="#FFA500"
+              starSize="32"
+            />
+          </View>
 
-      }
-
-      <TouchableOpacity disabled={props.prop.rating?.raters?.includes(props.prop.userId)}  style={styles.butonCont} onPress={handleAddRatingPress}>
-          <Text style={styles.addratingtext}>Add Rating</Text>
-      </TouchableOpacity>
+        )}
+      {!props.prop.rating?.raters?.includes(props.prop.userId) && <TouchableOpacity style={styles.butonCont} onPress={() => {setRatingVisible(!ratingVisible)}}>
+        <Text style={styles.addratingtext}>{!ratingVisible ? "Add Rating" : "Close"}</Text>
+      </TouchableOpacity>}
     </View>
   );
 };
@@ -199,8 +192,8 @@ const renderTabBar = props => (
   />
 );
 
-const TabViewExample = ({prop, handleClick}) => {
-  
+const TabViewExample = ({ prop, handleClick }) => {
+
   state = {
     index: 0,
     routes: [
@@ -210,20 +203,20 @@ const TabViewExample = ({prop, handleClick}) => {
   };
 
 
-    // console.log('Prop value:', prop);
-    return (
-      <TabView
-        renderTabBar={renderTabBar}
-        navigationState={this.state}
-        renderScene={SceneMap({
-          first: () => <FirstRoute prop={prop} />,
-          second: () => <SecondRoute prop={prop} handleClick={handleClick} />,
-        })}
-        onIndexChange={index => state.index = index}
-        initialLayout={{ width: Dimensions.get('window').width }}
-        style={styles.container}
-      />
-    );
+  // console.log('Prop value:', prop);
+  return (
+    <TabView
+      renderTabBar={renderTabBar}
+      navigationState={this.state}
+      renderScene={SceneMap({
+        first: () => <FirstRoute prop={prop} />,
+        second: () => <SecondRoute prop={prop} handleClick={handleClick} />,
+      })}
+      onIndexChange={index => state.index = index}
+      initialLayout={{ width: Dimensions.get('window').width }}
+      style={styles.container}
+    />
+  );
 }
 
 export default TabViewExample
