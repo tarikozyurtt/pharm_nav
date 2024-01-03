@@ -18,7 +18,7 @@ router.post("/pharmacy", auth, async (req, res) => {
   );
 
   await connectDB();
-  const { code, location } = req.body;
+  const { code, location, userId } = req.body;
   if (!location) {
     return res.status(401).json({ message: "Location not found" });
   }
@@ -26,11 +26,14 @@ router.post("/pharmacy", auth, async (req, res) => {
   if (!codeData) {
     return res.status(401).json({ message: "Code is incorrect" });
   }
+  if (!userId) {
+    return res.status(401).json({ message: "User not found" });
+  }
 
   const { drugs } = codeData;
   await userSchema.findOneAndUpdate(
     {
-      _id: codeData.patientId,
+      _id: userId,
       "pastPrescriptions.code": { $ne: code },
     },
     {
@@ -55,6 +58,7 @@ router.post("/pharmacy", auth, async (req, res) => {
         },
         distanceField: "distance",
         spherical: true,
+        maxDistance: 5000,
       },
     },
     {

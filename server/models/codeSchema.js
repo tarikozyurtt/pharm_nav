@@ -7,9 +7,6 @@ const codeSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    patientId: {
-      type: String,
-    },
     drugs: {
       type: Object,
     },
