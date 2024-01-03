@@ -1,17 +1,33 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Linking, Platform, Image  } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 
 export default function MapScreen({ route }) {
     prop = route.params
     const pharmLocation = {
-        latitude: prop.coordinates[0],
-        longitude: prop.coordinates[1]
+        latitude: prop.coordinates[1],
+        longitude: prop.coordinates[0]
     }  
     const [location, setLocation] = useState(null);
     const [mid, setMid] = useState(null);
 
+    const handlePress = (latitude, longitude) => {
+        const googleMapsURL = `comgooglemaps://?daddr=${latitude},${longitude}`;
+        const appleMapsURL = `http://maps.apple.com/?daddr=${latitude},${longitude}`;
+    
+        Linking.canOpenURL(googleMapsURL)
+          .then((supported) => {
+            if (supported) {
+              return Linking.openURL(googleMapsURL);
+            } else {
+              return Linking.openURL(appleMapsURL);
+            }
+          })
+          .catch((err) => console.error('An error occurred', err));
+      };
+
+      
     useEffect(() => {
         (async () => {
             // console.log("pharm loc -> ", pharmLocation)
@@ -45,7 +61,10 @@ export default function MapScreen({ route }) {
             {location ? (
                 <MapView style={styles.map} region={mid}>
                     <Marker coordinate={location} title="You are here" />
-                    <Marker coordinate={pharmLocation} title="Your target pharmacy"/>
+                    
+                    <Marker coordinate={pharmLocation} title="Your target pharmacy" onPress={() => handlePress(prop.coordinates[1], prop.coordinates[0])}>
+                        <Image source={require('D:/pharmnavPush/pharm_nav/client/assets/pharm_icon.jpg')} style={{height: 35, width:35 }} />
+                    </Marker>
                 </MapView>
             ) : (
                 <Text>Loading...</Text>

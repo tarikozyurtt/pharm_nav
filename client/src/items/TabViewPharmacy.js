@@ -294,9 +294,6 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   mapButton: {
-    position: 'absolute',
-    top: 270,
-    right: 30,
     backgroundColor: '#FFFFFF', // or any other color you prefer
     borderRadius: 10,
     padding: 15,
