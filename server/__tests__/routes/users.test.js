@@ -118,7 +118,18 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
     });
   });
 
-  // Add more test cases as needed
+  it('should return 401 for an invalid token', async () => {
+    const userData = {
+      userId: 'invalidUserId',
+    };
+
+    const response = await request('https://astonishing-capybara-516671.netlify.app')
+      .post('/.netlify/functions/index/history')
+      .set('Authorization', 'Bearer invalidToken') // Set an invalid token
+      .send(userData);
+
+    expect(response.status).toBe(401);
+  });
 });
 
 // Test for /.netlify/functions/index/registerPharmacist
@@ -162,3 +173,4 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
 
   // Add more test cases as needed
 });
+
