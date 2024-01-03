@@ -62,6 +62,25 @@ describe('POST /api/addcomment', () => {
         ],
       });
     });
+
+    it('should handle missing patient when adding a comment', async () => {
+        // Mock the userSchema findById function to return null (patient not found)
+        userSchema.findById.mockResolvedValueOnce(null);
+    
+        const response = await request(app)
+          .post('/api/addcomment')
+          .set('Authorization', 'Bearer mocked_token')
+          .send({
+            pharmId: '6594d6b47d3c60852a9f311c',
+            comment: 'New comment',
+            patientId: 'nonexistentPatientId',
+          });
+    
+        expect(response.status).toBe(401);
+        expect(response.body).toEqual({
+          message: 'Patient not found',
+        });
+      });
   
     // Cleanup after all tests if necessary
     afterAll(() => {
