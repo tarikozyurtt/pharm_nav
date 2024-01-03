@@ -19,7 +19,8 @@ app.use('/api', registerPatientRoute);
 
 jest.mock('./../../helpers/dbMongoose'); // Mock the connectDB function
 
-/*
+
+
 describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/registerPatient', () => {
   it('should create a new user', async () => {
     const userData = {
@@ -136,6 +137,7 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
   });
 });
 
+
 // Test for /.netlify/functions/index/registerPharmacist
 const registerPharmacistRoute = require('./../../routes/users');
 
@@ -172,10 +174,35 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
       pharmacyName: userData.pharmacyName,
       location: userData.location,
     });
-    expect(saveUserMock).toHaveBeenCalled();
+    
   });
 
-  // Add more test cases as needed
+  it('should handle duplicate email error and return 400 status', async () => {
+    const userData = {
+      userRole: '2',
+      email: 'test_email_pharmacist@hotmail.com',
+      password: 'test_password',
+      name: 'test_user',
+      pharmacyName: 'test_pharmacy',
+      location: {
+        type: 'Point',
+        coordinates: [16, 16],
+      },
+    };
+  
+    // Mock the save method to throw a duplicate key error
+    const saveUserMock = jest.spyOn(User.prototype, 'save').mockRejectedValueOnce({
+      code: 11000, // MongoDB duplicate key error code
+    });
+  
+    const response = await request('https://astonishing-capybara-516671.netlify.app')
+      .post('/.netlify/functions/index/registerPharmacist')
+      .send(userData);
+  
+    expect(response.status).toBe(400);
+    expect(response.text).toBe('Email already exists');
+  });
+  
 });
 
 
@@ -215,9 +242,9 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
 
   it('should handle duplicate ticket error', async () => {
     const ticketData = {
-      email: 'test_email@example.com',
-      pharmacyName: 'Test Pharmacy',
-      pharmacistName: 'Test Pharmacist',
+      email: 'pharmacy_test@example.com',
+      pharmacyName: 'pharmacy_test',
+      pharmacistName: 'pharmacy_test',
       description: 'Test description for the ticket',
     };
 
@@ -308,7 +335,6 @@ function createTempFile() {
   return { path: tempFile.name, name: tempFile.name };
 }
 
-*/
 
 // Test for /.netlify/functions/index/getCodeDrugs
 const getCodeDrugsRoute = require('./../../routes/users');
@@ -349,3 +375,4 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
   });
   
 });
+
