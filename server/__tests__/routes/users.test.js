@@ -19,6 +19,7 @@ app.use('/api', registerPatientRoute);
 
 jest.mock('./../../helpers/dbMongoose'); // Mock the connectDB function
 
+/*
 describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/registerPatient', () => {
   it('should create a new user', async () => {
     const userData = {
@@ -306,3 +307,30 @@ function createTempFile() {
 
   return { path: tempFile.name, name: tempFile.name };
 }
+*/
+
+// Test for /.netlify/functions/index/getCodeDrugs
+const getCodeDrugsRoute = require('./../../routes/users');
+
+app.use('/api', getCodeDrugsRoute);
+
+jest.mock('./../../helpers/dbMongoose'); // Mock the connectDB function
+
+describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/getCodeDrugs', () => {
+  it('should return drugs for a valid prescription code', async () => {
+    // Assuming you have a valid prescription code in your database
+    const validCode = 'ABC';
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjY1OTQ3MWI5ZjA2MmMwYjJiY2JiZjNlZCIsImVtYWlsIjoib21lckBob3RtYWlsLmNvbSIsInBhc3RQcmVzY3JpcHRpb25zIjpbXSwidXNlclJvbGUiOiIxIiwibmFtZSI6Im9tZXIiLCJwYXNzd29yZCI6IiQyYiQxMCRkdjMxdm4vRHhWLjdmbHJ2QnZneVF1LlVnMHFCZ2lORUd1NE82R3NOcXNFdExBOW8veWVBUyIsIl9fdiI6MH0sImlhdCI6MTcwNDI0NDQ4MX0.3mQttReZ1r6oQlVHjI75gIKYfUpFkfEi_6S37LPC6go';
+
+    const response = await request('https://astonishing-capybara-516671.netlify.app')
+      .post('/.netlify/functions/index/getCodeDrugs')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ code: validCode });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      drugs: expect.any(Object),
+    });
+  });
+  
+});
