@@ -11,19 +11,17 @@ const CarouselCardItemDetailPage = ({ item, index }) => {
         source={{ uri: item.imgUrl }}
         style={styles.image}
       />
-      <Text style={styles.header}>{item.title}</Text>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: 'white',
     borderRadius: 8,
     width: ITEM_WIDTH-50,
-    paddingBottom: 20,
+    height: 180,
+    // paddingBottom: 20,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -35,7 +33,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: ITEM_WIDTH-50,
-    height: 150,
+    height: 180,
   },
   header: {
     color: "#222",
