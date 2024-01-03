@@ -177,7 +177,7 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
 
 
 // Test for /.netlify/functions/index/sendticket
-const sendTicketRoute = require('./../../routes/yourRoutes'); // Replace 'yourRoutes' with the actual path to your routes file
+const sendTicketRoute = require('./../../routes/users'); 
 
 app.use('/api', sendTicketRoute);
 
@@ -234,3 +234,44 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
     expect(response.text).toBe('Ticket already exists');
   });
 });
+
+
+// Test for /.netlify/functions/index/image
+const imageRoute = require('./../../routes/users');
+
+app.use('/api', imageRoute);
+
+describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/image', () => {
+  it('should upload an image and update pharmacy data', async () => {
+    // Assuming you have a valid authentication token
+    const token = 'your_valid_token';
+
+    // Assuming you have a valid pharmacy ID
+    const pharmacyId = 'your_pharmacy_id';
+
+    const imageFile = createTempFile(); // Create a temporary image file for testing
+
+    const response = await request('https://astonishing-capybara-516671.netlify.app')
+      .post('/.netlify/functions/index/image')
+      .set('Authorization', `Bearer ${token}`)
+      .field('pharmacyId', pharmacyId)
+      .attach('file', imageFile.path, imageFile.name);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      message: 'success',
+      image: expect.any(String),
+    });
+
+    // Add additional assertions for updating pharmacy data if needed
+  });
+
+  // Add more test cases as needed
+});
+
+// Helper function to create a temporary image file for testing
+function createTempFile() {
+  const tempFile = temp.fileSync({ postfix: '.png' });
+  fs.writeFileSync(tempFile.path, 'fake_image_data'); // Replace with actual image data
+  return { path: tempFile.path, name: tempFile.name };
+}
