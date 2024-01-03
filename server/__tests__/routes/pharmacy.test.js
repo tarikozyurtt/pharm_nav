@@ -287,4 +287,34 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
 
   });
 
+  it('should handle an error when adding a comment with an invalid pharmId', async () => {
+    // Assuming you have an invalid pharmId and a valid patientId in your database
+    const invalidPharmId = 'invalid_pharmId';
+    const validPatientId = '659306549cc142f020ad4803';
+  
+    // Mock the findById method for the patient
+    jest.spyOn(userSchema, 'findById').mockResolvedValueOnce({
+      _id: validPatientId,
+      name: 'omer', // Assuming the patient has a name property
+    });
+  
+    // Mock the findOneAndUpdate method to return null (pharmacy not found)
+    jest.spyOn(pharmacySchema, 'findOneAndUpdate').mockResolvedValueOnce(null);
+  
+    // Create a valid JWT token for authentication
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjY1OTQ3MWI5ZjA2MmMwYjJiY2JiZjNlZCIsImVtYWlsIjoib21lckBob3RtYWlsLmNvbSIsInBhc3RQcmVzY3JpcHRpb25zIjpbXSwidXNlclJvbGUiOiIxIiwibmFtZSI6Im9tZXIiLCJwYXNzd29yZCI6IiQyYiQxMCRkdjMxdm4vRHhWLjdmbHJ2QnZneVF1LlVnMHFCZ2lORUd1NE82R3NOcXNFdExBOW8veWVBUyIsIl9fdiI6MH0sImlhdCI6MTcwNDI0NDQ4MX0.3mQttReZ1r6oQlVHjI75gIKYfUpFkfEi_6S37LPC6go';
+  
+    const response = await request('https://astonishing-capybara-516671.netlify.app')
+      .post('/.netlify/functions/index/addcomment')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        pharmId: invalidPharmId,
+        comment: 'example comment3',
+        patientId: validPatientId,
+      });
+  
+    expect(response.status).toBe(401);
+    expect(response.body).toEqual({ message: 'Invalid pharmId' });
+  });
+  
 });
