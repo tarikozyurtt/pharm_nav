@@ -242,6 +242,10 @@ router.post("/addrating", auth, async (req, res) => {
 
     const { pharmId, rating, userId } = req.body;
 
+    if (!mongoose.Types.ObjectId.isValid(pharmId)) {
+      return res.status(401).json({ message: "Invalid pharmId" });
+    }
+
     let pharmacyData = await pharmacySchema.findOneAndUpdate(
       { _id: pharmId, "rating.raters": { $ne: userId } },
       {
