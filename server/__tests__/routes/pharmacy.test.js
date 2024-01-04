@@ -328,7 +328,7 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
   it('should add a rating to the pharmacy data for a valid pharmId and userId with proper authentication', async () => {
     // Assuming you have a valid pharmId and userId in your database
     const validPharmId = '65959b7a5f9ebf0cc78319a5';
-    const validUserId = '659308cb992dd0a7ae8ea126';
+    const validUserId = '6593106172742f84320866b0';
 
     // Mock the findOneAndUpdate method to return updated pharmacy data
     jest.spyOn(pharmacySchema, 'findOneAndUpdate').mockResolvedValueOnce({
@@ -353,7 +353,42 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('pharmacyData');
-    // ... (rest of the assertions)
+    expect(response.body.pharmacyData).toHaveProperty('_id');
+    expect(response.body.pharmacyData).toHaveProperty('location');
+    expect(response.body.pharmacyData).toHaveProperty('ownerId');
+    expect(response.body.pharmacyData).toHaveProperty('name');
+    expect(response.body.pharmacyData).toHaveProperty('isPremium');
+    expect(response.body.pharmacyData).toHaveProperty('pharmImages');
+    expect(response.body.pharmacyData).toHaveProperty('drugs');
+    expect(response.body.pharmacyData).toHaveProperty('address');
+    expect(response.body.pharmacyData).toHaveProperty('description');
+    expect(response.body.pharmacyData).toHaveProperty('phoneNum');
+    expect(response.body.pharmacyData).toHaveProperty('rating');
+    expect(response.body.pharmacyData).toHaveProperty('comments');
+  });
+
+  it('should handle an error when adding a rating with an invalid pharmId', async () => {
+    // Assuming you have an invalid pharmId and a valid userId in your database
+    const invalidPharmId = 'invalid_pharmId';
+    const validUserId = '659306549cc142f020ad4803';
+
+    // Mock the findOneAndUpdate method to return null (pharmacy not found)
+    jest.spyOn(pharmacySchema, 'findOneAndUpdate').mockResolvedValueOnce(null);
+
+    // Create a valid JWT token for authentication
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjY1OTQ3MWI5ZjA2MmMwYjJiY2JiZjNlZCIsImVtYWlsIjoib21lckBob3RtYWlsLmNvbSIsInBhc3RQcmVzY3JpcHRpb25zIjpbXSwidXNlclJvbGUiOiIxIiwibmFtZSI6Im9tZXIiLCJwYXNzd29yZCI6IiQyYiQxMCRkdjMxdm4vRHhWLjdmbHJ2QnZneVF1LlVnMHFCZ2lORUd1NE82R3NOcXNFdExBOW8veWVBUyIsIl9fdiI6MH0sImlhdCI6MTcwNDI0NDQ4MX0.3mQttReZ1r6oQlVHjI75gIKYfUpFkfEi_6S37LPC6go';
+
+    const response = await request('https://astonishing-capybara-516671.netlify.app')
+      .post('/.netlify/functions/index/addrating')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        pharmId: invalidPharmId,
+        rating: 3,
+        userId: validUserId,
+      });
+
+    expect(response.status).toBe(401);
+    expect(response.body).toEqual({ message: "Invalid pharmId" });
   });
 
 });
