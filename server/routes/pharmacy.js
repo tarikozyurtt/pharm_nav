@@ -137,6 +137,13 @@ router.post("/addcomment", auth, async (req, res) => {
       comment: "Very good pharmacy",
     }
   */
+    if (!mongoose.Types.ObjectId.isValid(patientId)) {
+      return res.status(401).json({ message: "Invalid patientId" });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(pharmId)) {
+      return res.status(401).json({ message: "Invalid pharmId" });
+    }
     let patient = await userSchema.findById(patientId);
     if (!patient) {
       return res.status(401).json({ message: "Patient not found" });
