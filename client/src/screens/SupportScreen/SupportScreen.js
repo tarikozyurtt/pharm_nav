@@ -71,7 +71,7 @@ return (
     {isLoading && (
                     <View style={styles.loadingContainer}>
                         <ActivityIndicator size="large" color="#0000ff" />
-                        <Text>We are logging you in...</Text>
+                        <Text>We are sending your form...</Text>
                     </View>
                 )}
   </View>
