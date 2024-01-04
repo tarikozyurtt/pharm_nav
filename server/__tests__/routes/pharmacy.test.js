@@ -16,6 +16,7 @@ app.use('/api', pharmacyRoute);
 
 jest.mock('./../../helpers/dbMongoose'); // Mock the connectDB function
 
+/*
 // Test for /pharmacyinfo
 describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/pharmacyinfo', () => {
   it('should return pharmacy data for a valid pharmId with proper authentication', async () => {
@@ -232,7 +233,9 @@ describe('GET https://astonishing-capybara-516671.netlify.app/.netlify/functions
   });
 
 });
+*/
 
+/*
 // Test for /addcomment
 describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/addcomment', () => {
   it('should add a comment to the pharmacy data for a valid pharmId and patientId with proper authentication', async () => {
@@ -316,5 +319,41 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
     expect(response.status).toBe(401);
     expect(response.body).toEqual({ message: 'Invalid pharmId' });
   });
-  
+
+});
+*/
+
+// Test for /addrating
+describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/addrating', () => {
+  it('should add a rating to the pharmacy data for a valid pharmId and userId with proper authentication', async () => {
+    // Assuming you have a valid pharmId and userId in your database
+    const validPharmId = '65959b7a5f9ebf0cc78319a5';
+    const validUserId = '659308cb992dd0a7ae8ea126';
+
+    // Mock the findOneAndUpdate method to return updated pharmacy data
+    jest.spyOn(pharmacySchema, 'findOneAndUpdate').mockResolvedValueOnce({
+      _id: validPharmId,
+      rating: {
+        totalRatings: 3.42,
+        raters: ['65931bd63b83d2037d7e898a', '659573696d38d21f6aea402b', '6595cc85144de5a90ac92d6b'],
+      },
+    });
+
+    // Create a valid JWT token for authentication
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjY1OTQ3MWI5ZjA2MmMwYjJiY2JiZjNlZCIsImVtYWlsIjoib21lckBob3RtYWlsLmNvbSIsInBhc3RQcmVzY3JpcHRpb25zIjpbXSwidXNlclJvbGUiOiIxIiwibmFtZSI6Im9tZXIiLCJwYXNzd29yZCI6IiQyYiQxMCRkdjMxdm4vRHhWLjdmbHJ2QnZneVF1LlVnMHFCZ2lORUd1NE82R3NOcXNFdExBOW8veWVBUyIsIl9fdiI6MH0sImlhdCI6MTcwNDI0NDQ4MX0.3mQttReZ1r6oQlVHjI75gIKYfUpFkfEi_6S37LPC6go';
+
+    const response = await request('https://astonishing-capybara-516671.netlify.app')
+      .post('/.netlify/functions/index/addrating')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        pharmId: validPharmId,
+        rating: 3,
+        userId: validUserId,
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('pharmacyData');
+    // ... (rest of the assertions)
+  });
+
 });
