@@ -9,6 +9,7 @@ const pharmacyRoute = require('./../../routes/pharmacy');
 const connectDB = require('./../../helpers/dbMongoose');
 const pharmacySchema = require('./../../models/pharmacySchema'); 
 const userSchema = require('./../../models/users'); // Import userSchema
+const codeSchema = require('./../../models/codeSchema'); // Import codeSchema
 
 const app = express();
 app.use(bodyParser.json());
@@ -321,7 +322,7 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
   });
 
 });
-*/
+
 
 // Test for /addrating
 describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/addrating', () => {
@@ -355,5 +356,91 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
     expect(response.body).toHaveProperty('pharmacyData');
     // ... (rest of the assertions)
   });
+
+});
+
+*/
+
+
+// Test for /pharmacy
+describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/functions/index/pharmacy', () => {
+  it('should return pharmacy data for a valid code, location, and userId with proper authentication', async () => {
+    // Assuming you have a valid code, location, and userId in your database
+    const validCode = 'VT1Q3X';
+    const validLocation = {
+      longitude: 29.025746064876986,
+      latitude: 41.096159151667563,
+    };
+    const validUserId = '6592fbaf187aaffc495005c7';
+
+    
+    // Mock the findOne and aggregate methods to return sample pharmacy data
+    jest.spyOn(codeSchema, 'findOne').mockResolvedValueOnce({
+      code: validCode,
+      drugs: {
+        pedifen: 0,
+        aspirin: 7,
+        parol: 7,
+        // ... other drugs
+      },
+    });
+
+    jest.spyOn(userSchema, 'findOneAndUpdate').mockResolvedValueOnce({
+      // ... mocked user data
+    });
+
+    jest.spyOn(pharmacySchema, 'aggregate').mockResolvedValueOnce([
+      {
+        _id: '65959bec5f9ebf0cc78319b1',
+        location: {
+          type: 'Point',
+          coordinates: [validLocation.longitude, validLocation.latitude],
+        },
+        name: 'Bereket Eczanesi',
+        isPremium: true,
+        pharmImages: ['https://imagedelivery.net/lbITvo6WrXsIJ-kdtTR0dg/913aee0f-e937-4bcf-74eb-0d4299c1bc00/public'],
+        rating: {
+          totalRatings: 0,
+          raters: [],
+        },
+        distance: 0,
+      },
+    ]);
+
+    // Create a valid JWT token for authentication
+    const token =  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjY1OTQ3MWI5ZjA2MmMwYjJiY2JiZjNlZCIsImVtYWlsIjoib21lckBob3RtYWlsLmNvbSIsInBhc3RQcmVzY3JpcHRpb25zIjpbXSwidXNlclJvbGUiOiIxIiwibmFtZSI6Im9tZXIiLCJwYXNzd29yZCI6IiQyYiQxMCRkdjMxdm4vRHhWLjdmbHJ2QnZneVF1LlVnMHFCZ2lORUd1NE82R3NOcXNFdExBOW8veWVBUyIsIl9fdiI6MH0sImlhdCI6MTcwNDI0NDQ4MX0.3mQttReZ1r6oQlVHjI75gIKYfUpFkfEi_6S37LPC6go';
+
+    const response = await request('https://astonishing-capybara-516671.netlify.app')
+      .post('/.netlify/functions/index/pharmacy')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        code: validCode,
+        location: validLocation,
+        userId: validUserId,
+      });
+
+    expect(response.status).toBe(200);
+
+    // Check the presence and non-emptiness of specific attributes in the response
+    expect(response.body).toHaveProperty('pharmacyData');
+    expect(response.body.pharmacyData).toBeTruthy();
+
+    expect(response.body.pharmacyData).toHaveProperty('premiumPharmacies');
+    expect(response.body.pharmacyData.premiumPharmacies).toBeTruthy();
+
+    expect(response.body.pharmacyData.premiumPharmacies[0]).toHaveProperty('_id');
+    expect(response.body.pharmacyData.premiumPharmacies[0]._id).toBeTruthy();
+
+    // ... other assertions for premiumPharmacies
+
+    expect(response.body.pharmacyData).toHaveProperty('pharmacies');
+    expect(response.body.pharmacyData.pharmacies).toBeTruthy();
+
+    expect(response.body.pharmacyData.pharmacies[0]).toHaveProperty('_id');
+    expect(response.body.pharmacyData.pharmacies[0]._id).toBeTruthy();
+
+    // ... other assertions for pharmacies
+  });
+
 
 });
