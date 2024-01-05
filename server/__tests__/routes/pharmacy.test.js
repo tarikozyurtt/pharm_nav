@@ -442,5 +442,31 @@ describe('POST https://astonishing-capybara-516671.netlify.app/.netlify/function
     // ... other assertions for pharmacies
   });
 
+  it('should handle an error when the code is incorrect', async () => {
+    // Assuming you have an invalid code, valid location, and userId in your database
+    const invalidCode = 'invalid_code';
+    const validLocation = {
+      longitude: 29.025746064876986,
+      latitude: 41.096159151667563,
+    };
+    const validUserId = '6592fbaf187aaffc495005c7';
+
+    // Mock the findOne method to return null (code not found)
+    jest.spyOn(codeSchema, 'findOne').mockResolvedValueOnce(null);
+
+    // Create a valid JWT token for authentication
+    const token =  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjY1OTQ3MWI5ZjA2MmMwYjJiY2JiZjNlZCIsImVtYWlsIjoib21lckBob3RtYWlsLmNvbSIsInBhc3RQcmVzY3JpcHRpb25zIjpbXSwidXNlclJvbGUiOiIxIiwibmFtZSI6Im9tZXIiLCJwYXNzd29yZCI6IiQyYiQxMCRkdjMxdm4vRHhWLjdmbHJ2QnZneVF1LlVnMHFCZ2lORUd1NE82R3NOcXNFdExBOW8veWVBUyIsIl9fdiI6MH0sImlhdCI6MTcwNDI0NDQ4MX0.3mQttReZ1r6oQlVHjI75gIKYfUpFkfEi_6S37LPC6go';
+    const response = await request('https://astonishing-capybara-516671.netlify.app')
+      .post('/.netlify/functions/index/pharmacy')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        code: invalidCode,
+        location: validLocation,
+        userId: validUserId,
+      });
+
+    expect(response.status).toBe(401);
+    expect(response.body).toEqual({ message: 'Code is incorrect' });
+  });
 
 });
