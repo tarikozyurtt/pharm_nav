@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
         width: "90%",
         flexDirection: 'row', // Arrange children in a row
         justifyContent: 'space-between', // Spread children to each end of the row
-        paddingTop: 5
+        paddingTop: 5,
     },
     leftAlign: {
         alignItems: 'flex-start', // Align children to the start (left)
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
-        height: "40%",
+        height: "45%",
     },
     scene: {
         flex: 1,
