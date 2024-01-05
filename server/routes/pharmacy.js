@@ -185,6 +185,10 @@ router.post("/update", auth, async (req, res) => {
     await connectDB();
 
     const { drugs, pharmId } = req.body;
+    
+    if (!mongoose.Types.ObjectId.isValid(pharmId)) {
+      return res.status(401).json({ message: "Invalid pharmId" });
+    }
 
     let pharmacyData = await pharmacySchema.findById(pharmId);
     if (!pharmacyData) {
